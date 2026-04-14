@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://www.educanet.tn.com/pfe/api/eleves/schema"
+    xmlns:tns="http://www.educanet.tn.com/pfe/api/eleves/schema"
+    elementFormDefault="qualified"
+    version="1.0">
+
+    <xsd:annotation>
+        <xsd:documentation xml:lang="fr">
+            EleveEndpoint — /api/eleves ; GET /by-classe/{idClasse} ; GET /{id}/fiche-medicale ; CRUD /{id}.
+            Carnet numérique: voir eleve-carnet-numerique-endpoint.xsd.
+        </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType name="EleveRequest">
+        <xsd:sequence>
+            <xsd:element name="matricule" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="nom" type="xsd:string"/>
+            <xsd:element name="prenom" type="xsd:string"/>
+            <xsd:element name="dateNaissance" type="xsd:date" minOccurs="0"/>
+            <xsd:element name="classeId" type="xsd:long"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="EleveDto">
+        <xsd:sequence>
+            <xsd:element name="id" type="xsd:long" minOccurs="0"/>
+            <xsd:element name="matricule" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="nom" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="prenom" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="dateNaissance" type="xsd:date" minOccurs="0"/>
+            <xsd:element name="classeId" type="xsd:long" minOccurs="0"/>
+            <xsd:element name="classeNom" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="niveauId" type="xsd:long" minOccurs="0"/>
+            <xsd:element name="niveauNom" type="xsd:string" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:simpleType name="TypeMaladieEleve">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="ALLERGIE"/>
+            <xsd:enumeration value="MALADIE_CHRONIQUE"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="MaladieEleveDto">
+        <xsd:sequence>
+            <xsd:element name="id" type="xsd:long" minOccurs="0"/>
+            <xsd:element name="eleveId" type="xsd:long" minOccurs="0"/>
+            <xsd:element name="type" type="tns:TypeMaladieEleve" minOccurs="0"/>
+            <xsd:element name="libelle" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="details" type="xsd:string" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="VaccinationDto">
+        <xsd:sequence>
+            <xsd:element name="id" type="xsd:long" minOccurs="0"/>
+            <xsd:element name="eleveId" type="xsd:long" minOccurs="0"/>
+            <xsd:element name="eleveNomComplet" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="classeNom" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="niveauNom" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="typeVaccinId" type="xsd:long" minOccurs="0"/>
+            <xsd:element name="typeVaccinNom" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="dose" type="xsd:int" minOccurs="0"/>
+            <xsd:element name="dateVaccination" type="xsd:date" minOccurs="0"/>
+            <xsd:element name="datePrevue" type="xsd:date" minOccurs="0"/>
+            <xsd:element name="numeroLot" type="xsd:string" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ConsultationDto">
+        <xsd:sequence>
+            <xsd:element name="id" type="xsd:long" minOccurs="0"/>
+            <xsd:element name="eleveId" type="xsd:long" minOccurs="0"/>
+            <xsd:element name="eleveNomComplet" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="classeNom" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="niveauNom" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="dateConsultation" type="xsd:date" minOccurs="0"/>
+            <xsd:element name="temperature" type="xsd:double" minOccurs="0"/>
+            <xsd:element name="vomissement" type="xsd:boolean" minOccurs="0"/>
+            <xsd:element name="diarrhee" type="xsd:boolean" minOccurs="0"/>
+            <xsd:element name="rapport" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="prochaineConsultation" type="xsd:date" minOccurs="0"/>
+            <xsd:element name="traitement" type="xsd:string" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="AccidentDto">
+        <xsd:sequence>
+            <xsd:element name="id" type="xsd:long" minOccurs="0"/>
+            <xsd:element name="eleveId" type="xsd:long" minOccurs="0"/>
+            <xsd:element name="eleveNomComplet" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="classeNom" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="niveauNom" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="dateAccident" type="xsd:date" minOccurs="0"/>
+            <xsd:element name="description" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="diagnostic" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="traitement" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="etat" type="xsd:string" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="FicheMedicaleDto">
+        <xsd:sequence>
+            <xsd:element name="eleve" type="tns:EleveDto" minOccurs="0"/>
+            <xsd:element name="vaccinations" minOccurs="0">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="item" type="tns:VaccinationDto" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="consultations" minOccurs="0">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="item" type="tns:ConsultationDto" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="accidents" minOccurs="0">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="item" type="tns:AccidentDto" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="maladies" minOccurs="0">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="item" type="tns:MaladieEleveDto" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="carnetNumeriquePresent" type="xsd:boolean" minOccurs="0"/>
+            <xsd:element name="carnetNumeriqueVersion" type="xsd:long" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="EleveDtoList">
+        <xsd:sequence>
+            <xsd:element name="item" type="tns:EleveDto" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:element name="GetElevesListQuery" type="tns:GetElevesListQueryType"/>
+    <xsd:complexType name="GetElevesListQueryType">
+        <xsd:sequence>
+            <xsd:element name="niveauId" type="xsd:long" minOccurs="0"/>
+            <xsd:element name="classeId" type="xsd:long" minOccurs="0"/>
+            <xsd:element name="q" type="xsd:string" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:element name="PostEleveBody" type="tns:EleveRequest"/>
+    <xsd:element name="PutEleveBody" type="tns:EleveRequest"/>
+    <xsd:element name="EleveResponse" type="tns:EleveDto"/>
+    <xsd:element name="EleveListResponse" type="tns:EleveDtoList"/>
+    <xsd:element name="FicheMedicaleResponse" type="tns:FicheMedicaleDto"/>
+</xsd:schema>

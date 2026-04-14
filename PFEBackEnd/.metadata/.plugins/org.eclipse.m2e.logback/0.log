@@ -1,0 +1,26 @@
+2026-02-12 09:55:33,715 [Worker-7: Loading available Gradle versions] INFO  o.e.b.c.i.u.g.PublishedGradleVersions - Gradle version information cache is not available. Remote download required.
+2026-02-12 09:55:58,028 [Worker-12: Importing Maven projects] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.maven.ide.eclipse.wtp.WarLifecycleMapping lifecycle mapping for MavenProject: tn.educanet:PFE:0.0.1-SNAPSHOT @ C:\Users\AsusVivobook\Desktop\PFEBackEnd\PFE\pom.xml.
+2026-02-12 09:56:01,512 [Worker-12: Importing Maven projects] INFO  o.e.m.c.i.embedder.EclipseLogger - Ignored given or default xjbSources [C:\Users\AsusVivobook\Desktop\PFEBackEnd\PFE\src\main\xjb], since it is not an existent file or directory.
+2026-02-12 09:56:01,517 [Worker-12: Importing Maven projects] INFO  o.e.m.c.i.embedder.EclipseLogger - No changes detected in schema or binding files - skipping JAXB generation.
+2026-02-12 09:56:01,776 [Worker-12: Importing Maven projects] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /PFE/src/main/java
+2026-02-12 09:56:01,777 [Worker-12: Importing Maven projects] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /PFE/target/generated-sources/jaxb
+2026-02-12 09:56:01,780 [Worker-12: Importing Maven projects] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /PFE/src/main/resources
+2026-02-12 09:56:01,789 [Worker-12: Importing Maven projects] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /PFE/src/main/resources
+2026-02-12 09:56:01,791 [Worker-12: Importing Maven projects] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /PFE/src/test/java
+2026-02-12 09:56:01,792 [Worker-12: Importing Maven projects] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /PFE/src/test/resources
+2026-02-12 09:56:03,140 [Worker-12: Importing Maven projects] INFO  o.e.m.c.i.p.ProjectConfigurationManager - Imported and configured 1 project(s) in 8 sec
+2026-02-12 09:56:04,811 [Worker-7: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Ignored given or default xjbSources [C:\Users\AsusVivobook\Desktop\PFEBackEnd\PFE\src\main\xjb], since it is not an existent file or directory.
+2026-02-12 09:56:04,812 [Worker-7: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - No changes detected in schema or binding files - skipping JAXB generation.
+2026-02-12 09:56:04,933 [Worker-7: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 1 resource from src\main\resources to target\classes
+2026-02-12 09:56:04,959 [Worker-7: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 2 resources from src\main\resources to target\classes
+2026-02-12 09:56:04,975 [Worker-7: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory C:\Users\AsusVivobook\Desktop\PFEBackEnd\PFE\src\test\resources
+2026-02-12 10:07:27,064 [Worker-16: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Ignored given or default xjbSources [C:\Users\AsusVivobook\Desktop\PFEBackEnd\PFE\src\main\xjb], since it is not an existent file or directory.
+2026-02-12 10:07:27,066 [Worker-16: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - No changes detected in schema or binding files - skipping JAXB generation.
+2026-02-12 10:07:27,071 [Worker-16: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 1 resource from src\main\resources to target\classes
+2026-02-12 10:07:27,081 [Worker-16: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 2 resources from src\main\resources to target\classes
+2026-02-12 10:07:27,086 [Worker-16: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory C:\Users\AsusVivobook\Desktop\PFEBackEnd\PFE\src\test\resources
+2026-02-12 10:08:02,453 [Worker-19: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Ignored given or default xjbSources [C:\Users\AsusVivobook\Desktop\PFEBackEnd\PFE\src\main\xjb], since it is not an existent file or directory.
+2026-02-12 10:08:02,453 [Worker-19: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - No changes detected in schema or binding files - skipping JAXB generation.
+2026-02-12 10:08:02,457 [Worker-19: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 1 resource from src\main\resources to target\classes
+2026-02-12 10:08:02,464 [Worker-19: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 2 resources from src\main\resources to target\classes
+2026-02-12 10:08:02,468 [Worker-19: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory C:\Users\AsusVivobook\Desktop\PFEBackEnd\PFE\src\test\resources

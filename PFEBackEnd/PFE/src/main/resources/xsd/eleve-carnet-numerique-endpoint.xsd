@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://www.educanet.tn.com/pfe/api/eleves/carnet-numerique/schema"
+    xmlns:tns="http://www.educanet.tn.com/pfe/api/eleves/carnet-numerique/schema"
+    elementFormDefault="qualified"
+    version="1.0">
+
+    <xsd:annotation>
+        <xsd:documentation xml:lang="fr">
+            EleveCarnetNumeriqueEndpoint — base: /api/eleves/{eleveId}/carnet-numerique.
+            GET /image — corps binaire (image), pas JSON.
+            POST JSON — CarnetNumeriqueUploadRequest ; DELETE — sans corps.
+        </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType name="CarnetNumeriqueUploadRequest">
+        <xsd:sequence>
+            <xsd:element name="image" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>Image base64, avec ou sans préfixe data:image/...;base64,</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:element name="PostCarnetNumeriqueBody" type="tns:CarnetNumeriqueUploadRequest"/>
+
+    <xsd:element name="PathEleveId">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="eleveId" type="xsd:long"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>

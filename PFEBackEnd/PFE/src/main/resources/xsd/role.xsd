@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://www.educanet.tn.com/business/role/schema"
+    xmlns:tns="http://www.educanet.tn.com/business/role/schema"
+    elementFormDefault="qualified"
+    version="1.0">
+
+    <xsd:complexType name="Role">
+        <xsd:sequence>
+            <xsd:element name="id" type="xsd:long" minOccurs="0"/>
+            <xsd:element name="name" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="code" type="xsd:string" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+</xsd:schema>

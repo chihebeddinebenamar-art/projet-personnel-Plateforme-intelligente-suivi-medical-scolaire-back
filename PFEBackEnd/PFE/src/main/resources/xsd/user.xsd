@@ -1,0 +1,61 @@
+<xsd:schema elementFormDefault="qualified" version="1.0"
+	targetNamespace="http://www.educanet.tn.com/business/user/schema"
+	xmlns:tns="http://www.educanet.tn.com/business/user/schema"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb" jaxb:version="3.0">
+
+	<xsd:annotation>
+		<xsd:appinfo>
+			<jaxb:schemaBindings>
+				<jaxb:package name="tn.educanet.business.ws.user" />
+			</jaxb:schemaBindings>
+		</xsd:appinfo>
+	</xsd:annotation>
+	
+	<xsd:complexType name="User">
+		<xsd:sequence>
+			<xsd:element name="id" type="xsd:long" />
+			<xsd:element name="firstName" type="xsd:string" />
+			<xsd:element name="lastName" type="xsd:string" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	
+	
+		<xsd:element name="GetUserByIdRequest">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="id" type="xsd:long" />
+				<xsd:any namespace="##targetNamespace"
+					processContents="strict" minOccurs="0" maxOccurs="unbounded">
+					<xsd:annotation>
+						<xsd:appinfo>
+							<jaxb:property name="anyNs" />
+						</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:any>
+				<xsd:any namespace="##other" processContents="lax"
+					minOccurs="0" maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="GetUserByIdResponse">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="User" type="tns:User" />
+				<xsd:any namespace="##targetNamespace"
+					processContents="strict" minOccurs="0" maxOccurs="unbounded">
+					<xsd:annotation>
+						<xsd:appinfo>
+							<jaxb:property name="anyNs" />
+						</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:any>
+				<xsd:any namespace="##other" processContents="lax"
+					minOccurs="0" maxOccurs="unbounded" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+</xsd:schema>

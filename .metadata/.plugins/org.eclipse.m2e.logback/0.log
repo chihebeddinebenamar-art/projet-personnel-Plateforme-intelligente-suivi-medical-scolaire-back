@@ -1,0 +1,30 @@
+2026-04-06 11:17:40,756 [Worker-6: Loading available Gradle versions] INFO  o.e.b.c.i.u.g.PublishedGradleVersions - Gradle version information cache is not available. Remote download required.
+2026-04-06 11:18:21,033 [Worker-15: Importing Maven projects] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.maven.ide.eclipse.wtp.WarLifecycleMapping lifecycle mapping for MavenProject: tn.educanet:PFE:0.0.1-SNAPSHOT @ C:\Users\njoud\Downloads\PFEBackEndD\PFEBackEnd\PFE\pom.xml.
+2026-04-06 11:18:52,533 [Worker-15: Importing Maven projects] INFO  o.e.m.c.i.embedder.EclipseLogger - Ignored given or default xjbSources [C:\Users\njoud\Downloads\PFEBackEndD\PFEBackEnd\PFE\src\main\xjb], since it is not an existent file or directory.
+2026-04-06 11:18:52,547 [Worker-15: Importing Maven projects] INFO  o.e.m.c.i.embedder.EclipseLogger - No changes detected in schema or binding files - skipping JAXB generation.
+2026-04-06 11:18:53,827 [Worker-15: Importing Maven projects] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /PFE/src/main/java
+2026-04-06 11:18:53,829 [Worker-15: Importing Maven projects] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /PFE/target/generated-sources/jaxb
+2026-04-06 11:18:53,845 [Worker-15: Importing Maven projects] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /PFE/src/main/resources
+2026-04-06 11:18:53,854 [Worker-15: Importing Maven projects] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /PFE/src/main/resources
+2026-04-06 11:18:53,860 [Worker-15: Importing Maven projects] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /PFE/src/test/java
+2026-04-06 11:18:53,870 [Worker-15: Importing Maven projects] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /PFE/src/test/resources
+2026-04-06 11:19:01,906 [Worker-15: Importing Maven projects] INFO  o.e.m.c.i.p.ProjectConfigurationManager - Imported and configured 1 project(s) in 54 sec
+2026-04-06 11:19:04,131 [Worker-16: Updating Maven Project] INFO  o.e.m.c.i.p.ProjectConfigurationManager - Update started
+2026-04-06 11:19:08,320 [Worker-16: Updating Maven Project] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.maven.ide.eclipse.wtp.WarLifecycleMapping lifecycle mapping for MavenProject: tn.educanet:PFE:0.0.1-SNAPSHOT @ C:\Users\njoud\Downloads\PFEBackEndD\PFEBackEnd\PFE\pom.xml.
+2026-04-06 11:19:16,339 [Worker-16: Updating Maven Project] INFO  o.e.m.c.i.embedder.EclipseLogger - Ignored given or default xjbSources [C:\Users\njoud\Downloads\PFEBackEndD\PFEBackEnd\PFE\src\main\xjb], since it is not an existent file or directory.
+2026-04-06 11:19:16,343 [Worker-16: Updating Maven Project] INFO  o.e.m.c.i.embedder.EclipseLogger - No changes detected in schema or binding files - skipping JAXB generation.
+2026-04-06 11:19:17,139 [Worker-16: Updating Maven Project] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /PFE/src/main/java
+2026-04-06 11:19:17,142 [Worker-16: Updating Maven Project] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /PFE/target/generated-sources/jaxb
+2026-04-06 11:19:17,147 [Worker-16: Updating Maven Project] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /PFE/src/main/resources
+2026-04-06 11:19:17,150 [Worker-16: Updating Maven Project] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /PFE/src/main/resources
+2026-04-06 11:19:17,152 [Worker-16: Updating Maven Project] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /PFE/src/test/java
+2026-04-06 11:19:17,156 [Worker-16: Updating Maven Project] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /PFE/src/test/resources
+2026-04-06 11:19:23,497 [Worker-16: Updating Maven Project] INFO  o.e.m.w.i.f.ResourceFilteringBuildParticipant - Cleaning filtered folder for PFE
+2026-04-06 11:19:23,852 [Worker-16: Updating Maven Project] INFO  o.e.m.c.i.p.ProjectConfigurationManager - Update completed for 1 poms: local refresh takes 0,00 sec, refresh facades takes 10,00 sec, update config takes 6,00 sec 
+2026-04-06 11:19:30,889 [Worker-0: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Ignored given or default xjbSources [C:\Users\njoud\Downloads\PFEBackEndD\PFEBackEnd\PFE\src\main\xjb], since it is not an existent file or directory.
+2026-04-06 11:19:30,891 [Worker-0: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - No changes detected in schema or binding files - skipping JAXB generation.
+2026-04-06 11:19:31,913 [Worker-0: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 1 resource from src\main\resources to target\classes
+2026-04-06 11:19:32,122 [Worker-0: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 2 resources from src\main\resources to target\classes
+2026-04-06 11:19:32,238 [Worker-0: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory C:\Users\njoud\Downloads\PFEBackEndD\PFEBackEnd\PFE\src\test\resources
+2026-04-06 11:19:32,243 [Worker-0: Building] INFO  o.e.m.w.i.f.ResourceFilteringBuildParticipant - Changed resources require a complete clean of filtered resources of PFE
+2026-04-06 11:19:32,259 [Worker-0: Building] INFO  o.e.m.w.i.f.ResourceFilteringBuildParticipant - Executing resource filtering for PFE

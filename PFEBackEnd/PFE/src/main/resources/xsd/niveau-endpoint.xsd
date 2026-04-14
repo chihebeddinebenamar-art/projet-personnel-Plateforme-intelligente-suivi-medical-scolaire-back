@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://www.educanet.tn.com/pfe/api/niveaux/schema"
+    xmlns:tns="http://www.educanet.tn.com/pfe/api/niveaux/schema"
+    elementFormDefault="qualified"
+    version="1.0">
+
+    <xsd:annotation>
+        <xsd:documentation xml:lang="fr">
+            NiveauEndpoint — /api/niveaux ; GET/PUT/DELETE /api/niveaux/{id}.
+        </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType name="NiveauRequest">
+        <xsd:sequence>
+            <xsd:element name="nom" type="xsd:string"/>
+            <xsd:element name="anneeScolaire" type="xsd:string" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="NiveauDto">
+        <xsd:sequence>
+            <xsd:element name="id" type="xsd:long" minOccurs="0"/>
+            <xsd:element name="nom" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="anneeScolaire" type="xsd:string" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="NiveauDtoList">
+        <xsd:sequence>
+            <xsd:element name="item" type="tns:NiveauDto" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:element name="GetNiveauxListQuery" type="tns:GetNiveauxListQueryType"/>
+    <xsd:complexType name="GetNiveauxListQueryType">
+        <xsd:sequence>
+            <xsd:element name="annee" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="nom" type="xsd:string" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:element name="PostNiveauBody" type="tns:NiveauRequest"/>
+    <xsd:element name="PutNiveauBody" type="tns:NiveauRequest"/>
+    <xsd:element name="NiveauResponse" type="tns:NiveauDto"/>
+    <xsd:element name="NiveauListResponse" type="tns:NiveauDtoList"/>
+</xsd:schema>

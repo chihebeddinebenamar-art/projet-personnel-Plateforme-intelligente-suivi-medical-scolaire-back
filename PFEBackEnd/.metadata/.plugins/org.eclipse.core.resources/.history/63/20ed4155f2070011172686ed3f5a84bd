@@ -1,0 +1,561 @@
+package tn.educanet.backend.endpoint;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import org.dozer.Mapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
+
+import jakarta.annotation.Resource;
+import tn.educanet.backend.model.AdvancedLoginOutCome;
+import tn.educanet.backend.model.LoginOutcome;
+import tn.educanet.backend.model.PageWrapper;
+import tn.educanet.backend.persistence.User;
+import tn.educanet.backend.persistence.UserLogHistory;
+import tn.educanet.backend.service.LoginService;
+import tn.educanet.backend.service.MessageErrorService;
+import tn.educanet.backend.service.UserLogHistoryService;
+import tn.educanet.backend.service.UserService;
+import tn.educanet.backend.serviceimpl.SmsComponent;
+import tn.educanet.business.ws.user.CheckFirstLoginRequest;
+import tn.educanet.business.ws.user.CheckFirstLoginResponse;
+import tn.educanet.business.ws.user.CheckMailAdressRequest;
+import tn.educanet.business.ws.user.CheckMailAdressResponse;
+import tn.educanet.business.ws.user.CreateNewAssistantRequest;
+import tn.educanet.business.ws.user.CreateNewAssistantResponse;
+import tn.educanet.business.ws.user.EducanetAdvancedLoginRequest;
+import tn.educanet.business.ws.user.EducanetAdvancedLoginResponse;
+import tn.educanet.business.ws.user.EducanetLoginRequest;
+import tn.educanet.business.ws.user.EducanetLoginResponse;
+import tn.educanet.business.ws.user.EducanetLogoutRequest;
+import tn.educanet.business.ws.user.EducanetLogoutResponse;
+import tn.educanet.business.ws.user.FindUSerRolesRequest;
+import tn.educanet.business.ws.user.FindUSerRolesResponse;
+import tn.educanet.business.ws.user.FindUSersRequest;
+import tn.educanet.business.ws.user.FindUSersResponse;
+import tn.educanet.business.ws.user.ForgottenPasswordParentRequest;
+import tn.educanet.business.ws.user.ForgottenPasswordParentResponse;
+import tn.educanet.business.ws.user.ForgottenPasswordRequest;
+import tn.educanet.business.ws.user.ForgottenPasswordResponse;
+import tn.educanet.business.ws.user.GetAllUserChatRequest;
+import tn.educanet.business.ws.user.GetAllUserChatResponse;
+import tn.educanet.business.ws.user.GetAllUserRequest;
+import tn.educanet.business.ws.user.GetAllUserResponse;
+import tn.educanet.business.ws.user.GetSpecificUserRequest;
+import tn.educanet.business.ws.user.GetSpecificUserResponse;
+import tn.educanet.business.ws.user.GetUserByLoginAndPasswordByAdminRequest;
+import tn.educanet.business.ws.user.GetUserByLoginAndPasswordByAdminResponse;
+import tn.educanet.business.ws.user.GetUserByLoginRequest;
+import tn.educanet.business.ws.user.GetUserByLoginResponse;
+import tn.educanet.business.ws.user.GetUserByurlpwRequest;
+import tn.educanet.business.ws.user.GetUserByurlpwResponse;
+import tn.educanet.business.ws.user.GetUserDetailsRequest;
+import tn.educanet.business.ws.user.GetUserDetailsResponse;
+import tn.educanet.business.ws.user.GetUserIncRequest;
+import tn.educanet.business.ws.user.GetUserIncResponse;
+import tn.educanet.business.ws.user.GetUserKissatiRequest;
+import tn.educanet.business.ws.user.GetUserKissatiResponse;
+import tn.educanet.business.ws.user.GetUserLoginAndPwRequest;
+import tn.educanet.business.ws.user.GetUserLoginAndPwResponse;
+import tn.educanet.business.ws.user.GetUserOrganizationRequest;
+import tn.educanet.business.ws.user.GetUserOrganizationResponse;
+import tn.educanet.business.ws.user.GetUserPwRequest;
+import tn.educanet.business.ws.user.GetUserPwResponse;
+import tn.educanet.business.ws.user.GetUserRequest;
+import tn.educanet.business.ws.user.GetUserResponse;
+import tn.educanet.business.ws.user.GrantAuthoritySpecificUserRequest;
+import tn.educanet.business.ws.user.GrantAuthoritySpecificUserResponse;
+import tn.educanet.business.ws.user.GrantAuthorityUserRequest;
+import tn.educanet.business.ws.user.GrantAuthorityUserResponse;
+import tn.educanet.business.ws.user.ListGeneralUserRequest;
+import tn.educanet.business.ws.user.ListGeneralUserResponse;
+import tn.educanet.business.ws.user.ListMessReceiversRequest;
+import tn.educanet.business.ws.user.ListMessReceiversResponse;
+import tn.educanet.business.ws.user.ListULHRequest;
+import tn.educanet.business.ws.user.ListULHResponse;
+import tn.educanet.business.ws.user.ListUserRoleOrganizationRequest;
+import tn.educanet.business.ws.user.ListUserRoleOrganizationResponse;
+import tn.educanet.business.ws.user.ListUserToSiwtchAccountRequest;
+import tn.educanet.business.ws.user.ListUserToSiwtchAccountResponse;
+import tn.educanet.business.ws.user.RenistialisePasswordRequest;
+import tn.educanet.business.ws.user.RenistialisePasswordResponse;
+import tn.educanet.business.ws.user.ResetUSersRequest;
+import tn.educanet.business.ws.user.ResetUSersResponse;
+import tn.educanet.business.ws.user.SearchUsersRequest;
+import tn.educanet.business.ws.user.SearchUsersResponse;
+import tn.educanet.business.ws.user.StartEducanetRequest;
+import tn.educanet.business.ws.user.StartEducanetResponse;
+import tn.educanet.business.ws.user.UpdateAfterFirstLoginRequest;
+import tn.educanet.business.ws.user.UpdateAfterFirstLoginResponse;
+import tn.educanet.business.ws.user.UpdateCredentialsRequest;
+import tn.educanet.business.ws.user.UpdateCredentialsResponse;
+import tn.educanet.business.ws.user.UpdatePasswordRequest;
+import tn.educanet.business.ws.user.UpdatePasswordResponse;
+import tn.educanet.business.ws.user.UpdateReglementUserRequest;
+import tn.educanet.business.ws.user.UpdateReglementUserResponse;
+import tn.educanet.business.ws.user.UpdateRenouvellementRequest;
+import tn.educanet.business.ws.user.UpdateRenouvellementResponse;
+import tn.educanet.business.ws.user.UpdateTypeDeviceRequest;
+import tn.educanet.business.ws.user.UpdateTypeDeviceResponse;
+import tn.educanet.business.ws.user.UpdateURLpwofUserRequest;
+import tn.educanet.business.ws.user.UpdateURLpwofUserResponse;
+import tn.educanet.business.ws.user.UpdateUserCouvertureRequest;
+import tn.educanet.business.ws.user.UpdateUserCouvertureResponse;
+import tn.educanet.business.ws.user.UpdateUserPhotoPathRequest;
+import tn.educanet.business.ws.user.UpdateUserPhotoPathResponse;
+import tn.educanet.business.ws.user.UpdateUserPhotoRequest;
+import tn.educanet.business.ws.user.UpdateUserPhotoResponse;
+import tn.educanet.business.ws.user.UpdateUserProfileRequest;
+import tn.educanet.business.ws.user.UpdateUserProfileResponse;
+import tn.educanet.business.ws.user.UpdateUserRequest;
+import tn.educanet.business.ws.user.UpdateUserResponse;
+import tn.educanet.business.ws.user.UpdateValidityAssistantRequest;
+import tn.educanet.business.ws.user.UpdateValidityAssistantResponse;
+
+@Endpoint
+public class UserEndPoint {
+
+	public static final String NS = "http://www.educanet.tn.com/business/user/schema";
+
+	@Resource
+	private LoginService loginService;
+
+	@Resource
+	private UserService userService;
+
+	@Resource
+	private UserLogHistoryService historyService;
+	
+	@Resource
+	private MessageErrorService messageErrorService;
+
+	@Resource
+	private SmsComponent smsComponent;
+
+	@Resource
+	Mapper mapper;
+
+	@PayloadRoot(namespace = NS, localPart = "GetUserOrganizationRequest")
+	@ResponsePayload
+	GetUserOrganizationResponse getUserOrganizationResponse(@RequestPayload GetUserOrganizationRequest request) {
+		List<User> user = userService.getUserbydate(request.getOrganizationName(),
+				request.getCreationDate().toGregorianCalendar().getTime(), request.getRoleid());
+		return mapper.map(user, GetUserOrganizationResponse.class);
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "EducanetLoginRequest")
+	@ResponsePayload
+	EducanetLoginResponse educanetLoginResponse(@RequestPayload EducanetLoginRequest request) {
+		
+		System.out.println("request.getRole().value() == "+request.getRole().value());
+		LoginOutcome loginOutcome = loginService.login(request.getRole().value(), request.getUsername(),
+				request.getPassword(), request.getOrganizationName());
+		System.out.println("loginOutcome.getStatus() == "+loginOutcome.getUser().getLogin());
+		
+		return mapper.map(loginOutcome, EducanetLoginResponse.class);
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "UpdateUserRequest")
+	@ResponsePayload
+	UpdateUserResponse response(@RequestPayload UpdateUserRequest request) {
+		User user = userService.updateUserAccount(request.getId(), request.getLanguageId(), request.getTimeZone(),
+				request.getNewPassword(), request.getOldPassowrd(), request.getReminderQueryQuestion(),
+				request.getReminderQueryAnswer());
+		return mapper.map(user, UpdateUserResponse.class);
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "UpdateRenouvellementRequest")
+	@ResponsePayload
+	UpdateRenouvellementResponse response(@RequestPayload UpdateRenouvellementRequest request) {
+		User user = userService.updateForRenouvellement(request.getId(), request.getLoginIp());
+		return mapper.map(user, UpdateRenouvellementResponse.class);
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "ListMessReceiversRequest")
+	@ResponsePayload
+	ListMessReceiversResponse listMessReceiversResponse(@RequestPayload ListMessReceiversRequest request) {
+		PageRequest pageable = PageRequest.of(request.getPageNumber() - 1, request.getPageSize(),
+				Direction.fromString(request.getOrderDir().value()), request.getOrderBy());
+
+		Page<User> result = userService.filterForMessage(request.getOrgname(), request.getRoleid(),
+				request.getScreenName(), pageable);
+		PageWrapper<User> pageWrapper= new PageWrapper<User>(result);
+		return mapper.map(pageWrapper,  ListMessReceiversResponse.class);
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "UpdateAfterFirstLoginRequest")
+	@ResponsePayload
+	UpdateAfterFirstLoginResponse afterFirstLoginResponse(@RequestPayload UpdateAfterFirstLoginRequest request) {
+
+		User user = userService.firstLoginUpdate(request.getId(), request.isAgreedToTermsOfUse(),
+				request.getNewPassword(), request.getOldPassowrd(), request.getReminderQueryQuestion(),
+				request.getReminderQueryAnswer());
+		return mapper.map(user, UpdateAfterFirstLoginResponse.class);
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "UpdateUserPhotoRequest")
+	@ResponsePayload
+	UpdateUserPhotoResponse updateUseffResponse(@RequestPayload UpdateUserPhotoRequest request) {
+
+		User user = userService.updateUserPhoto(request.getId(), request.getPhoto(), request.getPhotoName());
+		return mapper.map(user, UpdateUserPhotoResponse.class);
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "UpdateUserProfileRequest")
+	@ResponsePayload
+	UpdateUserProfileResponse updateUserProfileResponse(@RequestPayload UpdateUserProfileRequest request) {
+		Date birthDate = null;
+		if (request.getBirthDate() != null) {
+			birthDate = request.getBirthDate().toGregorianCalendar().getTime();
+		}
+		User user = userService.updateUser(request.getId(), request.getFirstName(), request.getMiddleName(),
+				request.getLastName(), request.getLastName(), request.getEmailAdress(), request.getLanguageId(),
+				request.getTimeZone(), birthDate, request.getBirthPlace(), request.getGender(), request.getPhoto(),
+				request.getPhotoName(), request.getArabeName(), request.getRefName());
+		return mapper.map(user, UpdateUserProfileResponse.class);
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "GetUserRequest")
+	@ResponsePayload
+	GetUserResponse getUserResponse(@RequestPayload GetUserRequest request) {
+		User user = userService.get(request.getId());
+		return mapper.map(user, GetUserResponse.class);
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "ListULHRequest")
+	@ResponsePayload
+	ListULHResponse listULHResponse(@RequestPayload ListULHRequest request) {
+		List<UserLogHistory> results = historyService.filterList(request.getOrgname(), request.getUserId(),
+				request.getMonthindex(), request.getYear(), request.getRole().value());
+		return mapper.map(results, ListULHResponse.class);
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "EducanetLogoutRequest")
+	@ResponsePayload
+	EducanetLogoutResponse educanetLogoutResponse(@RequestPayload EducanetLogoutRequest request) {
+		userService.disconnect(request.getUserId());
+		return new EducanetLogoutResponse();
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "ListGeneralUserRequest")
+	@ResponsePayload
+	ListGeneralUserResponse listGeneralUserResponse(@RequestPayload ListGeneralUserRequest request) {
+		PageRequest pageable = PageRequest.of(request.getPageNumber() - 1, request.getPageSize(),
+				Direction.fromString(request.getOrderDir().value()), request.getOrderBy());
+		Page<User> users = userService.searchforlocked(request.getOrgname(), request.getLocked().value(), pageable);
+		PageWrapper<User> pageWrapper= new PageWrapper<User>(users);
+		return mapper.map(pageWrapper, ListGeneralUserResponse.class);
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "GrantAuthorityUserRequest")
+	@ResponsePayload
+	GrantAuthorityUserResponse grantAuthorityUserResponse(@RequestPayload GrantAuthorityUserRequest request) {
+		userService.blockExpiredUsers(request.getOrgname(), request.getFeeId(), request.isLockout());
+		return new GrantAuthorityUserResponse();
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "FindUSersRequest")
+	@ResponsePayload
+	FindUSersResponse findUSersResponse(@RequestPayload FindUSersRequest request) {
+		List<User> users = userService.findByGuardianPhoneId(request.getPhone());
+		return mapper.map(users, FindUSersResponse.class);
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "FindUSerRolesRequest")
+	@ResponsePayload
+	FindUSerRolesResponse findUSerRolesResponse(@RequestPayload FindUSerRolesRequest request) {
+		List<User> users = userService.finduserIdforole(request.getId());
+		return mapper.map(users, FindUSerRolesResponse.class);
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "ResetUSersRequest")
+	@ResponsePayload
+	ResetUSersResponse resetUSersResponse(@RequestPayload ResetUSersRequest request) {
+		User user = userService.resetPassword(request.getUserId());
+		return mapper.map(user, ResetUSersResponse.class);
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "GetSpecificUserRequest")
+	@ResponsePayload
+	GetSpecificUserResponse getSpecificUserResponse(@RequestPayload GetSpecificUserRequest request) {
+		User user = userService.getWithBindings(request.getId());
+		return mapper.map(user, GetSpecificUserResponse.class);
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "GrantAuthoritySpecificUserRequest")
+	@ResponsePayload
+	GrantAuthoritySpecificUserResponse grantAuthoritySpecificUserResponse(
+			@RequestPayload GrantAuthoritySpecificUserRequest request) {
+		userService.updateForLock(request.getUserId(), request.isLock());
+		return new GrantAuthoritySpecificUserResponse();
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "SearchUsersRequest")
+	@ResponsePayload
+	SearchUsersResponse searchUsersResponse(@RequestPayload SearchUsersRequest request) {
+		PageRequest pageable = PageRequest.of(request.getPageNumber() - 1, request.getPageSize(),
+				Direction.fromString(request.getOrderDir().value()), request.getOrderBy());
+		Page<User> users = userService.findUsersForIndividualLock(request.getOrgId(), request.getLogin(),
+				request.getPhone(), request.getName(), request.getRole(), pageable);
+		PageWrapper<User> pageWrapper= new PageWrapper<User>(users);
+		return mapper.map(pageWrapper, SearchUsersResponse.class);
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "StartEducanetRequest")
+	@ResponsePayload
+	StartEducanetResponse startEducanetResponse(@RequestPayload StartEducanetRequest request) {
+
+		User user = userService.firstLoginUpdateAdvance(request.getId(), request.isAgreedToTermsOfUse(),
+				request.getNewPassword(), request.getOldPassowrd(), request.getReminderQueryQuestion(),
+				request.getReminderQueryAnswer(), request.getPhoneId(), request.getUserCountryCode(),
+				request.getPhoneNumber(), request.getAdressMail());
+		return mapper.map(user, StartEducanetResponse.class);
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "CheckFirstLoginRequest")
+	@ResponsePayload
+	CheckFirstLoginResponse checkFirstLoginResponse(@RequestPayload CheckFirstLoginRequest request) {
+		User user = userService.get(request.getId());
+		Boolean firstAttempt = user.isPasswordEncrypted() == true ? false : true;
+		CheckFirstLoginResponse response = new CheckFirstLoginResponse();
+		response.setFirstLogin(firstAttempt);
+		return response;
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "CheckMailAdressRequest")
+	@ResponsePayload
+	CheckMailAdressResponse checkMailAdressResponse(@RequestPayload CheckMailAdressRequest request) {
+		CheckMailAdressResponse resp = new CheckMailAdressResponse();
+		resp.setExist(!userService.findByadressMail(request.getMail()));
+		return resp;
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "ForgottenPasswordRequest")
+	@ResponsePayload
+	ForgottenPasswordResponse forgottenPasswordResponse(@RequestPayload ForgottenPasswordRequest request) {
+
+		User user = userService.resetPassword(request.getLogin(), "+216", request.getPhoneNumber());
+		String message = getMessage(user);
+		smsComponent.send("+216", request.getPhoneNumber().replaceAll("\\D", ""), message, 13 + "", "PASSWORD RESET",
+				false);
+		ForgottenPasswordResponse resp = new ForgottenPasswordResponse();
+		resp.setPasswordReset(true);
+		return resp;
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "ForgottenPasswordParentRequest")
+	@ResponsePayload
+	ForgottenPasswordParentResponse forgottenPassgwordResponse(@RequestPayload ForgottenPasswordParentRequest request) {
+
+		userService.resetPassword(request.getLogin(), "+216", request.getPhoneNumber());
+
+		ForgottenPasswordParentResponse resp = new ForgottenPasswordParentResponse();
+		resp.setPasswordReset(true);
+		return resp;
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "EducanetAdvancedLoginRequest")
+	@ResponsePayload
+	EducanetAdvancedLoginResponse advancedLoginResponse(@RequestPayload EducanetAdvancedLoginRequest request) {
+
+		AdvancedLoginOutCome outCome = loginService.loginAdvanced(request.getUsername(), request.getPassword(),
+				request.getOrganizationName());
+		return mapper.map(outCome, EducanetAdvancedLoginResponse.class);
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "GetUserIncRequest")
+	@ResponsePayload
+	GetUserIncResponse getUserIncResponse(@RequestPayload GetUserIncRequest request) {
+		User user = userService.get(request.getId());
+		return mapper.map(user, GetUserIncResponse.class);
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "GetUserDetailsRequest")
+	@ResponsePayload
+	GetUserDetailsResponse getUserDetailsResponse(@RequestPayload GetUserDetailsRequest request) {
+		User user = userService.get(request.getId());
+		return mapper.map(user, GetUserDetailsResponse.class);
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "UpdateCredentialsRequest")
+	@ResponsePayload
+	UpdateCredentialsResponse credentialsResponse(@RequestPayload UpdateCredentialsRequest request) {
+		userService.updateLogin(request.getId(), request.getFirstName(), request.getLastName(), request.getLogin(),
+				request.getRefName());
+		return new UpdateCredentialsResponse();
+	}
+
+	private String getMessage(User user) {
+		StringBuilder bd = new StringBuilder(256);
+		bd.append("Educanet vous informe que votre mot de passe est réinitialisé. Nouveau Mot de passe :");
+		bd.append(user.getMotpass());
+		bd.append(" .");
+		bd.append(
+				"Télécharger notre application mobile: http://onelink.to/g2zebb , ou accéder au web: mon-compte.educanet.pro.");
+		return bd.toString();
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "GetUserPwRequest")
+	@ResponsePayload
+	GetUserPwResponse getUserPwResponse(@RequestPayload GetUserPwRequest request) {
+		User user = userService.getPw(request.getId(), request.getPassword());
+		return mapper.map(user, GetUserPwResponse.class);
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "GetUserByLoginRequest")
+	@ResponsePayload
+	GetUserByLoginResponse getUserByLoginResponse(@RequestPayload GetUserByLoginRequest request) {
+		User user = userService.getByLogin(request.getLogin());
+		return mapper.map(user, GetUserByLoginResponse.class);
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "UpdateValidityAssistantRequest")
+	@ResponsePayload
+	UpdateValidityAssistantResponse updatealidResponse(@RequestPayload UpdateValidityAssistantRequest request) {
+		userService.updateAssistantValidity(request.getIduser(), request.getValidity());
+
+		return new UpdateValidityAssistantResponse();
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "GetUserLoginAndPwRequest")
+	@ResponsePayload
+	GetUserLoginAndPwResponse getUserLoginAndPwResponse(@RequestPayload GetUserLoginAndPwRequest request) {
+		User user = userService.getLoginEtPw(request.getLogin(), request.getPassword());
+		return mapper.map(user, GetUserLoginAndPwResponse.class);
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "UpdateTypeDeviceRequest")
+	@ResponsePayload
+	UpdateTypeDeviceResponse updateTypeDeviceResponse(@RequestPayload UpdateTypeDeviceRequest request) {
+		userService.updateTypeDevice(request.getIduser(), request.getTypedevice());
+
+		return new UpdateTypeDeviceResponse();
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "ListUserRoleOrganizationRequest")
+	@ResponsePayload
+	ListUserRoleOrganizationResponse listUserRoleOrganizationResponse(
+			@RequestPayload ListUserRoleOrganizationRequest request) {
+		List<User> user = userService.getUserbyRole(request.getOrganizationName(), request.getRoleid(),
+				request.getTypedevice());
+		return mapper.map(user, ListUserRoleOrganizationResponse.class);
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "UpdatePasswordRequest")
+	@ResponsePayload
+	UpdatePasswordResponse updatePasswordResponse(@RequestPayload UpdatePasswordRequest request) {
+
+		userService.updatePassword(request.getIduser(), request.isPasswordEncrypted(), request.getMotpass(),
+				request.isAgreedToTermsOfUse());
+
+		return new UpdatePasswordResponse();
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "CreateNewAssistantRequest")
+	@ResponsePayload
+	CreateNewAssistantResponse createNewAssistantResponse(@RequestPayload CreateNewAssistantRequest request) {
+		User user = userService.createUserAccount(request.getOrganizationId(), request.getFirstName(), null,
+				request.getLastName(), null, request.getFirstName() + request.getLastName() + "@educanet.tn", "fr",
+				"gmt+1", Calendar.getInstance().getTime(), null, "masculin", 5, true, request.getPhone(), "+216",
+				request.getPhone(), "", request.getOrganizationName(), request.getLastName(), null, 1000, 1, 1);
+		return mapper.map(user, CreateNewAssistantResponse.class);
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "RenistialisePasswordRequest")
+	@ResponsePayload
+	RenistialisePasswordResponse renistialisePassword(@RequestPayload RenistialisePasswordRequest request) {
+		User user = userService.reinitialisePassword(request.getId());
+		return mapper.map(user, RenistialisePasswordResponse.class);
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "UpdateReglementUserRequest")
+	@ResponsePayload
+	UpdateReglementUserResponse updateReglementUser(@RequestPayload UpdateReglementUserRequest request) {
+		User user = userService.updateReglement(request.getLogin());
+		return mapper.map(user, UpdateReglementUserResponse.class);
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "GetAllUserRequest")
+	@ResponsePayload
+	GetAllUserResponse getAllUser(@RequestPayload GetAllUserRequest request) {
+		List<User> listUser = userService.getAllUser(request.getListIdOrganization().getIdsOrganization(),
+				request.getListIdRole().getIdsRole());
+		return mapper.map(listUser, GetAllUserResponse.class);
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "UpdateUserCouvertureRequest")
+	@ResponsePayload
+	UpdateUserCouvertureResponse updateUserCouverture(@RequestPayload UpdateUserCouvertureRequest request) {
+		User user = userService.updateCouverture(request.getId(), request.getCouverture());
+		return mapper.map(user, UpdateUserCouvertureResponse.class);
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "UpdateUserPhotoPathRequest")
+	@ResponsePayload
+	UpdateUserPhotoPathResponse updateUserPhotoPath(@RequestPayload UpdateUserPhotoPathRequest request) {
+		User user = userService.updatePhoto(request.getId(), request.getPhoto());
+		return mapper.map(user, UpdateUserPhotoPathResponse.class);
+	}
+	
+	
+	
+	@PayloadRoot(namespace = NS, localPart = "GetUserKissatiRequest")
+	@ResponsePayload
+	GetUserKissatiResponse getUserKissati(@RequestPayload GetUserKissatiRequest request) {
+		User user = userService.loginKissati(request.getLogin(), request.getPassword());
+		return mapper.map(user, GetUserKissatiResponse.class);
+	}
+	
+	
+	@PayloadRoot(namespace = NS, localPart = "GetAllUserChatRequest")
+	@ResponsePayload
+	GetAllUserChatResponse getAllUserChat(@RequestPayload GetAllUserChatRequest request) {
+		List<User> listUser = userService.getAllUser(request.getListIdOrganization().getIdsOrganization(), request.getListIdRole().getIdsRole(), request.getRoleCall(), request.getIdUser());
+		return mapper.map(listUser, GetAllUserChatResponse.class);
+	}
+	
+	
+	
+	@PayloadRoot(namespace = NS, localPart = "ListUserToSiwtchAccountRequest")
+	@ResponsePayload
+	ListUserToSiwtchAccountResponse listUserToSiwtchAccount(@RequestPayload ListUserToSiwtchAccountRequest request) {
+		List<User> listUser = userService.listUserByPhoneToSwitchAccount(request.getPhone());
+		return mapper.map(listUser, ListUserToSiwtchAccountResponse.class);
+	}
+
+	
+	@PayloadRoot(namespace = NS, localPart = "GetUserByLoginAndPasswordByAdminRequest")
+	@ResponsePayload
+	GetUserByLoginAndPasswordByAdminResponse getUserByLoginAndPasswordByAdmin(@RequestPayload GetUserByLoginAndPasswordByAdminRequest request) {
+		User user = new User();
+		user = userService.getUserByLoginAndPasswordAdmin(request.getLogin(), request.getPassword());
+		if(user.getId()<0) {
+			user.setErrorMsg(messageErrorService.get(user.getId()).getErrorMessage());
+		}
+		return mapper.map(user, GetUserByLoginAndPasswordByAdminResponse.class);
+	}
+	
+	
+	
+	@PayloadRoot(namespace = NS, localPart = "GetUserByurlpwRequest")
+	@ResponsePayload
+	GetUserByurlpwResponse getUserByLoginResponse(@RequestPayload GetUserByurlpwRequest request) {
+		User user = userService.getUserByurlpw(request.getUrllogin());
+		return mapper.map(user, GetUserByurlpwResponse.class);
+	}
+	
+	@PayloadRoot(namespace = NS, localPart = "UpdateURLpwofUserRequest")
+	@ResponsePayload
+	UpdateURLpwofUserResponse updateURLpwofUserRequest(@RequestPayload UpdateURLpwofUserRequest request) {
+		User user = userService.updatenewurlpw(request.getId());
+		return mapper.map(user, UpdateURLpwofUserResponse.class);
+	}
+
+}

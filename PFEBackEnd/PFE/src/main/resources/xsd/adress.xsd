@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://www.educanet.tn.com/business/adress/schema"
+    xmlns:tns="http://www.educanet.tn.com/business/adress/schema"
+    elementFormDefault="qualified"
+    version="1.0">
+
+    <xsd:complexType name="Adress">
+        <xsd:sequence>
+            <xsd:element name="id" type="xsd:long" minOccurs="0"/>
+            <xsd:element name="adressname" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="streetname" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="cityname" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="codePostal" type="xsd:int" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+</xsd:schema>
