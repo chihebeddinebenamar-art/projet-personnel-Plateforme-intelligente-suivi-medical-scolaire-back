@@ -2,52 +2,72 @@ package tn.educanet.pfe.endpoint;
 
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
-import jakarta.validation.Valid;
-import tn.educanet.pfe.api.dto.MaladieEleveDto;
-import tn.educanet.pfe.api.dto.MaladieEleveRequest;
+import com.tn.educanet.pfe.api.eleves.maladies.schema.DeleteEleveMaladieRequestType;
+import com.tn.educanet.pfe.api.eleves.maladies.schema.DeleteEleveMaladieResponseType;
+import com.tn.educanet.pfe.api.eleves.maladies.schema.GetEleveMaladiesListQueryType;
+import com.tn.educanet.pfe.api.eleves.maladies.schema.MaladieEleveDto;
+import com.tn.educanet.pfe.api.eleves.maladies.schema.MaladieEleveDtoList;
+import com.tn.educanet.pfe.api.eleves.maladies.schema.ObjectFactory;
+import com.tn.educanet.pfe.api.eleves.maladies.schema.UpdateEleveMaladieRequestType;
+
+import jakarta.annotation.Resource;
+import jakarta.xml.bind.JAXBElement;
 import tn.educanet.pfe.service.EleveMaladieService;
 
-@RestController
-@RequestMapping("/api/eleves/{eleveId}/maladies")
+@Endpoint
 public class EleveMaladieEndpoint {
 
-	private final EleveMaladieService eleveMaladieService;
+	public static final String NS = "http://www.educanet.tn.com/pfe/api/eleves/maladies/schema";
 
-	public EleveMaladieEndpoint(EleveMaladieService eleveMaladieService) {
-		this.eleveMaladieService = eleveMaladieService;
+	@Resource
+	private EleveMaladieService service;
+
+	private final ObjectFactory factory = new ObjectFactory();
+
+	@PayloadRoot(namespace = NS, localPart = "GetEleveMaladiesListQuery")
+	@ResponsePayload
+	public JAXBElement<MaladieEleveDtoList> lister(@RequestPayload JAXBElement<GetEleveMaladiesListQueryType> request) {
+		Long eleveId = request != null && request.getValue() != null ? request.getValue().getEleveId() : null;
+		List<MaladieEleveDto> items = service.lister(eleveId);
+		MaladieEleveDtoList response = factory.createMaladieEleveDtoList();
+		for (MaladieEleveDto dto : items) {
+			response.getItem().add(dto);
+		}
+		return factory.createMaladieListResponse(response);
 	}
 
-	@GetMapping
-	public List<MaladieEleveDto> lister(@PathVariable Long eleveId) {
-		return eleveMaladieService.lister(eleveId);
+	@PayloadRoot(namespace = NS, localPart = "PostMaladieBody")
+	@ResponsePayload
+	public JAXBElement<com.tn.educanet.pfe.api.eleves.maladies.schema.MaladieEleveDto> creer(
+			@RequestPayload JAXBElement<com.tn.educanet.pfe.api.eleves.maladies.schema.CreateEleveMaladieRequestType> request) {
+		com.tn.educanet.pfe.api.eleves.maladies.schema.CreateEleveMaladieRequestType value = request.getValue();
+		var created = service.creer(value.getEleveId(), value.getBody());
+		return factory.createMaladieResponse(created);
 	}
 
-	@PostMapping
-	@ResponseStatus(HttpStatus.CREATED)
-	public MaladieEleveDto creer(@PathVariable Long eleveId, @Valid @RequestBody MaladieEleveRequest request) {
-		return eleveMaladieService.creer(eleveId, request);
+	@PayloadRoot(namespace = NS, localPart = "PutMaladieBody")
+	@ResponsePayload
+	public JAXBElement<com.tn.educanet.pfe.api.eleves.maladies.schema.MaladieEleveDto> modifier(
+			@RequestPayload JAXBElement<UpdateEleveMaladieRequestType> request) {
+		UpdateEleveMaladieRequestType value = request.getValue();
+		var updated = service.modifier(value.getEleveId(), value.getId(), value.getBody());
+		return factory.createMaladieResponse(updated);
 	}
 
-	@PutMapping("/{id}")
-	public MaladieEleveDto modifier(@PathVariable Long eleveId, @PathVariable Long id,
-			@Valid @RequestBody MaladieEleveRequest request) {
-		return eleveMaladieService.modifier(eleveId, id, request);
+	@PayloadRoot(namespace = NS, localPart = "DeleteEleveMaladieRequest")
+	@ResponsePayload
+	public JAXBElement<DeleteEleveMaladieResponseType> supprimer(
+			@RequestPayload JAXBElement<DeleteEleveMaladieRequestType> request) {
+		DeleteEleveMaladieRequestType v = request.getValue();
+		service.supprimer(v.getEleveId(), v.getId());
+		DeleteEleveMaladieResponseType response = factory.createDeleteEleveMaladieResponseType();
+		response.setSuccess(true);
+		return factory.createDeleteEleveMaladieResponse(response);
 	}
 
-	@DeleteMapping("/{id}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void supprimer(@PathVariable Long eleveId, @PathVariable Long id) {
-		eleveMaladieService.supprimer(eleveId, id);
-	}
 }

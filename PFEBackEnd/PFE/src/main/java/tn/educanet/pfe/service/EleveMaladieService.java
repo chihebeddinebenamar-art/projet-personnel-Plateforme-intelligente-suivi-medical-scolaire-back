@@ -2,9 +2,9 @@ package tn.educanet.pfe.service;
 
 import java.util.List;
 
-import tn.educanet.pfe.api.dto.MaladieEleveDto;
-import tn.educanet.pfe.api.dto.MaladieEleveListDto;
-import tn.educanet.pfe.api.dto.MaladieEleveRequest;
+import com.tn.educanet.pfe.api.eleves.maladies.schema.MaladieEleveDto;
+import com.tn.educanet.pfe.api.eleves.maladies.schema.MaladieEleveRequest;
+import com.tn.educanet.pfe.api.maladies.schema.MaladieEleveListDto;
 
 public interface EleveMaladieService {
 

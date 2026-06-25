@@ -2,8 +2,8 @@ package tn.educanet.pfe.service;
 
 import java.util.List;
 
-import tn.educanet.pfe.api.dto.NiveauDto;
-import tn.educanet.pfe.api.dto.NiveauRequest;
+import com.tn.educanet.pfe.api.niveaux.schema.NiveauDto;
+import com.tn.educanet.pfe.api.niveaux.schema.NiveauRequest;
 
 public interface NiveauService {
 

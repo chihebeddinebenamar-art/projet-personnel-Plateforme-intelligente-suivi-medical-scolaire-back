@@ -1,62 +1,74 @@
 package tn.educanet.pfe.endpoint;
 
 import java.util.List;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import com.tn.educanet.pfe.api.consultations.schema.ConsultationDto;
+import com.tn.educanet.pfe.api.consultations.schema.ConsultationDtoList;
+import com.tn.educanet.pfe.api.consultations.schema.ConsultationRequest;
+import com.tn.educanet.pfe.api.consultations.schema.DeleteConsultationRequestType;
+import com.tn.educanet.pfe.api.consultations.schema.DeleteConsultationResponseType;
+import com.tn.educanet.pfe.api.consultations.schema.GetConsultationsListQueryType;
+import com.tn.educanet.pfe.api.consultations.schema.ObjectFactory;
+import com.tn.educanet.pfe.api.consultations.schema.UpdateConsultationRequestType;
 
-import jakarta.validation.Valid;
-import tn.educanet.pfe.api.dto.ConsultationDto;
-import tn.educanet.pfe.api.dto.ConsultationRequest;
+import jakarta.annotation.Resource;
+import jakarta.xml.bind.JAXBElement;
 import tn.educanet.pfe.service.ConsultationService;
 
-@RestController
-@RequestMapping("/api/consultations")
+@Endpoint
 public class ConsultationEndpoint {
 
-	private final ConsultationService consultationService;
+	public static final String NS = "http://www.educanet.tn.com/pfe/api/consultations/schema";
 
-	public ConsultationEndpoint(ConsultationService consultationService) {
-		this.consultationService = consultationService;
-	}
+	@Resource
+	private ConsultationService service;
 
-	/**
-	 * Sans {@code eleveId} : liste globale avec filtres optionnels (niveau, classe, recherche nom/prénom/matricule).
-	 * Avec {@code eleveId} : consultations d’un élève (comportement historique).
-	 */
-	@GetMapping
-	public List<ConsultationDto> lister(@RequestParam(required = false) Long eleveId,
-			@RequestParam(required = false) Long niveauId, @RequestParam(required = false) Long classeId,
-			@RequestParam(required = false) String q) {
-		if (eleveId != null) {
-			return consultationService.listerParEleve(eleveId);
+	private final ObjectFactory factory = new ObjectFactory();
+
+	@PayloadRoot(namespace = NS, localPart = "GetConsultationsListQuery")
+	@ResponsePayload
+	public JAXBElement<ConsultationDtoList> lister(@RequestPayload JAXBElement<GetConsultationsListQueryType> request) {
+		GetConsultationsListQueryType query = request != null ? request.getValue() : null;
+		Long eleveId = query != null ? query.getEleveId() : null;
+		List<ConsultationDto> items = eleveId != null ? service.listerParEleve(eleveId)
+				: service.listerFiltres(query != null ? query.getNiveauId() : null,
+						query != null ? query.getClasseId() : null, query != null ? query.getQ() : null);
+		ConsultationDtoList response = factory.createConsultationDtoList();
+		for (ConsultationDto dto : items) {
+			response.getItem().add(dto);
 		}
-		return consultationService.listerFiltres(niveauId, classeId, q);
+		return factory.createConsultationListResponse(response);
 	}
 
-	@PostMapping
-	@ResponseStatus(HttpStatus.CREATED)
-	public ConsultationDto creer(@Valid @RequestBody ConsultationRequest request) {
-		return consultationService.creer(request);
+	@PayloadRoot(namespace = NS, localPart = "PostConsultationBody")
+	@ResponsePayload
+	public JAXBElement<com.tn.educanet.pfe.api.consultations.schema.ConsultationDto> creer(
+			@RequestPayload JAXBElement<ConsultationRequest> request) {
+		ConsultationDto created = service.creer(request.getValue());
+		return factory.createConsultationResponse(created);
 	}
 
-	@PutMapping("/{id}")
-	public ConsultationDto modifier(@PathVariable Long id, @Valid @RequestBody ConsultationRequest request) {
-		return consultationService.modifier(id, request);
+	@PayloadRoot(namespace = NS, localPart = "PutConsultationBody")
+	@ResponsePayload
+	public JAXBElement<com.tn.educanet.pfe.api.consultations.schema.ConsultationDto> modifier(
+			@RequestPayload JAXBElement<UpdateConsultationRequestType> request) {
+		UpdateConsultationRequestType value = request.getValue();
+		ConsultationDto updated = service.modifier(value.getId(), value.getBody());
+		return factory.createConsultationResponse(updated);
 	}
 
-	@DeleteMapping("/{id}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void supprimer(@PathVariable Long id) {
-		consultationService.supprimer(id);
+	@PayloadRoot(namespace = NS, localPart = "DeleteConsultationRequest")
+	@ResponsePayload
+	public JAXBElement<DeleteConsultationResponseType> supprimer(
+			@RequestPayload JAXBElement<DeleteConsultationRequestType> request) {
+		service.supprimer(request.getValue().getId());
+		DeleteConsultationResponseType response = factory.createDeleteConsultationResponseType();
+		response.setSuccess(true);
+		return factory.createDeleteConsultationResponse(response);
 	}
+
 }

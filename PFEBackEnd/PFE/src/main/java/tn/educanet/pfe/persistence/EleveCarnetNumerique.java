@@ -31,12 +31,15 @@ public class EleveCarnetNumerique implements Serializable {
 	@JoinColumn(name = "eleve_id", nullable = false, unique = true)
 	private Eleve eleve;
 
-	/** Nom de fichier sur disque (pas le chemin complet). */
-	@Column(name = "stored_filename", nullable = false, length = 255)
+	/** Ancien stockage image unique (nullable si photos dans {@code EleveCarnetNumeriquePhoto}). */
+	@Column(name = "stored_filename", length = 255)
 	private String storedFilename;
 
-	@Column(name = "content_type", nullable = false, length = 100)
+	@Column(name = "content_type", length = 100)
 	private String contentType;
+
+	@Column(name = "description", length = 2000)
+	private String description;
 
 	@Column(name = "updated_at", nullable = false)
 	private Instant updatedAt;
@@ -82,6 +85,14 @@ public class EleveCarnetNumerique implements Serializable {
 
 	public void setContentType(String contentType) {
 		this.contentType = contentType;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public Instant getUpdatedAt() {

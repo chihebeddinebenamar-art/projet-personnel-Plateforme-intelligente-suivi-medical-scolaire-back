@@ -1,69 +1,98 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-    targetNamespace="http://www.educanet.tn.com/pfe/api/accidents/schema"
-    xmlns:tns="http://www.educanet.tn.com/pfe/api/accidents/schema"
-    elementFormDefault="qualified"
-    version="1.0">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xsd:schema elementFormDefault="qualified" version="1.0"
+	targetNamespace="http://www.educanet.tn.com/pfe/api/accidents/schema"
+	xmlns:tns="http://www.educanet.tn.com/pfe/api/accidents/schema"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
+	jaxb:version="3.0">
 
-    <xsd:annotation>
-        <xsd:documentation xml:lang="fr">
-            AccidentEndpoint — base: GET/POST /api/accidents ; PUT/DELETE /api/accidents/{id}.
-            GET liste: query optionnels eleveId, niveauId, classeId, q.
-        </xsd:documentation>
-    </xsd:annotation>
+	<xsd:annotation>
+		<xsd:documentation xml:lang="fr">
+			AccidentEndpoint — contrat SOAP (liste, création, mise à jour, suppression).
+		</xsd:documentation>
+		<xsd:appinfo>
+			<jaxb:schemaBindings>
+				<jaxb:package name="com.tn.educanet.pfe.api.accidents.schema" />
+			</jaxb:schemaBindings>
+		</xsd:appinfo>
+	</xsd:annotation>
 
-    <xsd:complexType name="AccidentRequest">
-        <xsd:sequence>
-            <xsd:element name="eleveId" type="xsd:long"/>
-            <xsd:element name="dateAccident" type="xsd:date"/>
-            <xsd:element name="description" type="xsd:string"/>
-            <xsd:element name="diagnostic" type="xsd:string"/>
-            <xsd:element name="traitement" type="xsd:string"/>
-            <xsd:element name="etat" type="xsd:string"/>
-        </xsd:sequence>
-    </xsd:complexType>
+	<xsd:complexType name="AccidentRequest">
+		<xsd:sequence>
+			<xsd:element name="eleveId" type="xsd:long"/>
+			<xsd:element name="dateAccident" type="xsd:date"/>
+			<xsd:element name="description" type="xsd:string"/>
+			<xsd:element name="diagnostic" type="xsd:string"/>
+			<xsd:element name="traitement" type="xsd:string"/>
+			<xsd:element name="etat" type="xsd:string"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:complexType name="AccidentDto">
-        <xsd:sequence>
-            <xsd:element name="id" type="xsd:long" minOccurs="0"/>
-            <xsd:element name="eleveId" type="xsd:long" minOccurs="0"/>
-            <xsd:element name="eleveNomComplet" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="classeNom" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="niveauNom" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="dateAccident" type="xsd:date" minOccurs="0"/>
-            <xsd:element name="description" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="diagnostic" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="traitement" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="etat" type="xsd:string" minOccurs="0"/>
-        </xsd:sequence>
-    </xsd:complexType>
+	<xsd:complexType name="AccidentDto">
+		<xsd:sequence>
+			<xsd:element name="id" type="xsd:long" minOccurs="0"/>
+			<xsd:element name="eleveId" type="xsd:long" minOccurs="0"/>
+			<xsd:element name="eleveNomComplet" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="classeNom" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="niveauNom" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="dateAccident" type="xsd:date" minOccurs="0"/>
+			<xsd:element name="description" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="diagnostic" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="traitement" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="etat" type="xsd:string" minOccurs="0"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:complexType name="AccidentDtoList">
-        <xsd:sequence>
-            <xsd:element name="item" type="tns:AccidentDto" minOccurs="0" maxOccurs="unbounded"/>
-        </xsd:sequence>
-    </xsd:complexType>
+	<xsd:complexType name="AccidentDtoList">
+		<xsd:sequence>
+			<xsd:element name="item" type="tns:AccidentDto" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:element name="GetAccidentsListQuery" type="tns:GetAccidentsListQueryType"/>
-    <xsd:complexType name="GetAccidentsListQueryType">
-        <xsd:sequence>
-            <xsd:element name="eleveId" type="xsd:long" minOccurs="0"/>
-            <xsd:element name="niveauId" type="xsd:long" minOccurs="0"/>
-            <xsd:element name="classeId" type="xsd:long" minOccurs="0"/>
-            <xsd:element name="q" type="xsd:string" minOccurs="0"/>
-        </xsd:sequence>
-    </xsd:complexType>
+	<xsd:element name="GetAccidentsListQuery" type="tns:GetAccidentsListQueryType"/>
+	<xsd:complexType name="GetAccidentsListQueryType">
+		<xsd:sequence>
+			<xsd:element name="eleveId" type="xsd:long" minOccurs="0"/>
+			<xsd:element name="niveauId" type="xsd:long" minOccurs="0"/>
+			<xsd:element name="classeId" type="xsd:long" minOccurs="0"/>
+			<xsd:element name="q" type="xsd:string" minOccurs="0"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:element name="PostAccidentBody" type="tns:AccidentRequest"/>
-    <xsd:element name="PutAccidentBody" type="tns:AccidentRequest"/>
-    <xsd:element name="AccidentResponse" type="tns:AccidentDto"/>
-    <xsd:element name="AccidentListResponse" type="tns:AccidentDtoList"/>
+	<xsd:element name="PostAccidentBody" type="tns:AccidentRequest"/>
+	<xsd:element name="PutAccidentBody" type="tns:UpdateAccidentRequestType"/>
+	<xsd:complexType name="UpdateAccidentRequestType">
+		<xsd:sequence>
+			<xsd:element name="id" type="xsd:long"/>
+			<xsd:element name="body" type="tns:AccidentRequest"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="AccidentResponse" type="tns:AccidentDto"/>
+	<xsd:element name="AccidentListResponse" type="tns:AccidentDtoList"/>
 
-    <xsd:element name="PathId">
-        <xsd:complexType>
-            <xsd:sequence>
-                <xsd:element name="id" type="xsd:long"/>
-            </xsd:sequence>
-        </xsd:complexType>
-    </xsd:element>
+	<xsd:element name="DeleteAccidentRequest" type="tns:DeleteAccidentRequestType"/>
+	<xsd:complexType name="DeleteAccidentRequestType">
+		<xsd:sequence>
+			<xsd:element name="id" type="xsd:long"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="DeleteAccidentResponse" type="tns:DeleteAccidentResponseType"/>
+	<xsd:complexType name="DeleteAccidentResponseType">
+		<xsd:sequence>
+			<xsd:element name="success" type="xsd:boolean"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 </xsd:schema>

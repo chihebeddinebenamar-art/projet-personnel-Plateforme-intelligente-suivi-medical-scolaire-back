@@ -26,10 +26,17 @@ public abstract class EleveSpecification {
 			}
 			if (StringUtils.hasText(recherche)) {
 				String like = "%" + recherche.trim().toLowerCase() + "%";
+				String digits = recherche.replaceAll("\\s+", "");
+				String digitsLike = "%" + digits.toLowerCase() + "%";
 				p = cb.and(p, cb.or(
 						cb.like(cb.lower(root.get("nom")), like),
 						cb.like(cb.lower(root.get("prenom")), like),
-						cb.like(cb.lower(root.get("matricule")), like)));
+						cb.like(cb.lower(root.get("matricule")), like),
+						cb.like(cb.lower(root.get("numeroParent")), like),
+						cb.like(cb.lower(root.get("emailParent")), like),
+						cb.like(cb.lower(root.get("sexe")), like),
+						cb.like(cb.lower(cb.function("replace", String.class, root.get("numeroParent"), cb.literal(" "),
+								cb.literal(""))), digitsLike)));
 			}
 			return p;
 		};

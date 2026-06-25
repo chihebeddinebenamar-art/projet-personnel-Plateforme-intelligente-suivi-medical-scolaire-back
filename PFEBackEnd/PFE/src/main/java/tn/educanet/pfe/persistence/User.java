@@ -21,8 +21,8 @@ public class User implements Serializable {
 	private String lastName;
 
 	public User() {
-		super();
-		// TODO Auto-generated constructor stub
+
+
 	}
 
 	public long getId() {

@@ -2,8 +2,8 @@ package tn.educanet.pfe.service;
 
 import java.util.List;
 
-import tn.educanet.pfe.api.dto.TypeVaccinDto;
-import tn.educanet.pfe.api.dto.TypeVaccinRequest;
+import com.tn.educanet.pfe.api.vaccins.types.schema.TypeVaccinDto;
+import com.tn.educanet.pfe.api.vaccins.types.schema.TypeVaccinRequest;
 
 public interface TypeVaccinService {
 

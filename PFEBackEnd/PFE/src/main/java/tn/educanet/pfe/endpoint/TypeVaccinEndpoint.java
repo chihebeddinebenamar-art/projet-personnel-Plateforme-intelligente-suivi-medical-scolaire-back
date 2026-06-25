@@ -2,51 +2,79 @@ package tn.educanet.pfe.endpoint;
 
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.dozer.Mapper;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
-import jakarta.validation.Valid;
-import tn.educanet.pfe.api.dto.TypeVaccinDto;
-import tn.educanet.pfe.api.dto.TypeVaccinRequest;
+import com.tn.educanet.pfe.api.vaccins.types.schema.DeleteTypeVaccinRequestType;
+import com.tn.educanet.pfe.api.vaccins.types.schema.DeleteTypeVaccinResponseType;
+import com.tn.educanet.pfe.api.vaccins.types.schema.GetTypesVaccinListQueryType;
+import com.tn.educanet.pfe.api.vaccins.types.schema.ObjectFactory;
+import com.tn.educanet.pfe.api.vaccins.types.schema.TypeVaccinDto;
+import com.tn.educanet.pfe.api.vaccins.types.schema.TypeVaccinDtoList;
+import com.tn.educanet.pfe.api.vaccins.types.schema.TypeVaccinRequest;
+import com.tn.educanet.pfe.api.vaccins.types.schema.UpdateTypeVaccinRequestType;
+
+import jakarta.annotation.Resource;
+import jakarta.xml.bind.JAXBElement;
 import tn.educanet.pfe.service.TypeVaccinService;
 
-@RestController
-@RequestMapping("/api/vaccins/types")
+@Endpoint
 public class TypeVaccinEndpoint {
 
-	private final TypeVaccinService typeVaccinService;
+	public static final String NS = "http://www.educanet.tn.com/pfe/api/vaccins/types/schema";
 
-	public TypeVaccinEndpoint(TypeVaccinService typeVaccinService) {
-		this.typeVaccinService = typeVaccinService;
+	@Resource
+	private Mapper mapper;
+
+	@Resource
+	private TypeVaccinService service;
+
+	private final ObjectFactory factory = new ObjectFactory();
+
+	@PayloadRoot(namespace = NS, localPart = "GetTypesVaccinListQuery")
+	@ResponsePayload
+	public JAXBElement<TypeVaccinDtoList> lister(@RequestPayload JAXBElement<GetTypesVaccinListQueryType> request) {
+		List<TypeVaccinDto> items = service.lister();
+		TypeVaccinDtoList response = factory.createTypeVaccinDtoList();
+		for (TypeVaccinDto dto : items) {
+			response.getItem().add(mapper.map(dto, com.tn.educanet.pfe.api.vaccins.types.schema.TypeVaccinDto.class));
+		}
+		return factory.createTypeVaccinListResponse(response);
 	}
 
-	@GetMapping
-	public List<TypeVaccinDto> lister() {
-		return typeVaccinService.lister();
+	@PayloadRoot(namespace = NS, localPart = "PostTypeVaccinBody")
+	@ResponsePayload
+	public JAXBElement<com.tn.educanet.pfe.api.vaccins.types.schema.TypeVaccinDto> creer(
+			@RequestPayload JAXBElement<TypeVaccinRequest> request) {
+		TypeVaccinRequest apiRequest = mapper.map(request.getValue(), TypeVaccinRequest.class);
+		TypeVaccinDto created = service.creer(apiRequest);
+		com.tn.educanet.pfe.api.vaccins.types.schema.TypeVaccinDto out = mapper.map(created,
+				com.tn.educanet.pfe.api.vaccins.types.schema.TypeVaccinDto.class);
+		return factory.createTypeVaccinResponse(out);
 	}
 
-	@PostMapping
-	@ResponseStatus(HttpStatus.CREATED)
-	public TypeVaccinDto creer(@Valid @RequestBody TypeVaccinRequest request) {
-		return typeVaccinService.creer(request);
+	@PayloadRoot(namespace = NS, localPart = "PutTypeVaccinBody")
+	@ResponsePayload
+	public JAXBElement<com.tn.educanet.pfe.api.vaccins.types.schema.TypeVaccinDto> modifier(
+			@RequestPayload JAXBElement<UpdateTypeVaccinRequestType> request) {
+		UpdateTypeVaccinRequestType value = request.getValue();
+		TypeVaccinRequest apiRequest = mapper.map(value.getBody(), TypeVaccinRequest.class);
+		TypeVaccinDto updated = service.modifier(value.getId(), apiRequest);
+		com.tn.educanet.pfe.api.vaccins.types.schema.TypeVaccinDto out = mapper.map(updated,
+				com.tn.educanet.pfe.api.vaccins.types.schema.TypeVaccinDto.class);
+		return factory.createTypeVaccinResponse(out);
 	}
 
-	@PutMapping("/{id}")
-	public TypeVaccinDto modifier(@PathVariable Long id, @Valid @RequestBody TypeVaccinRequest request) {
-		return typeVaccinService.modifier(id, request);
-	}
-
-	@DeleteMapping("/{id}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void supprimer(@PathVariable Long id) {
-		typeVaccinService.supprimer(id);
+	@PayloadRoot(namespace = NS, localPart = "DeleteTypeVaccinRequest")
+	@ResponsePayload
+	public JAXBElement<DeleteTypeVaccinResponseType> supprimer(
+			@RequestPayload JAXBElement<DeleteTypeVaccinRequestType> request) {
+		service.supprimer(request.getValue().getId());
+		DeleteTypeVaccinResponseType response = factory.createDeleteTypeVaccinResponseType();
+		response.setSuccess(true);
+		return factory.createDeleteTypeVaccinResponse(response);
 	}
 }

@@ -1,63 +1,75 @@
 package tn.educanet.pfe.endpoint;
 
 import java.util.List;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import com.tn.educanet.pfe.api.vaccinations.schema.DeleteVaccinationRequestType;
+import com.tn.educanet.pfe.api.vaccinations.schema.DeleteVaccinationResponseType;
+import com.tn.educanet.pfe.api.vaccinations.schema.GetVaccinationsListQueryType;
+import com.tn.educanet.pfe.api.vaccinations.schema.ObjectFactory;
+import com.tn.educanet.pfe.api.vaccinations.schema.UpdateVaccinationRequestType;
+import com.tn.educanet.pfe.api.vaccinations.schema.VaccinationDto;
+import com.tn.educanet.pfe.api.vaccinations.schema.VaccinationDtoList;
+import com.tn.educanet.pfe.api.vaccinations.schema.VaccinationRequest;
 
-import jakarta.validation.Valid;
-import tn.educanet.pfe.api.dto.VaccinationDto;
-import tn.educanet.pfe.api.dto.VaccinationRequest;
+import jakarta.annotation.Resource;
+import jakarta.xml.bind.JAXBElement;
 import tn.educanet.pfe.service.VaccinationService;
 
-@RestController
-@RequestMapping("/api/vaccinations")
+@Endpoint
 public class VaccinationEndpoint {
 
-	private final VaccinationService vaccinationService;
+	public static final String NS = "http://www.educanet.tn.com/pfe/api/vaccinations/schema";
 
-	public VaccinationEndpoint(VaccinationService vaccinationService) {
-		this.vaccinationService = vaccinationService;
-	}
+	@Resource
+	private VaccinationService service;
 
-	/**
-	 * Sans {@code eleveId} : liste globale avec filtres optionnels (niveau, classe, type, q nom/prénom/matricule, numeroLot).
-	 * Avec {@code eleveId} : vaccinations d’un élève (comportement historique).
-	 */
-	@GetMapping
-	public List<VaccinationDto> lister(@RequestParam(required = false) Long eleveId,
-			@RequestParam(required = false) Long niveauId, @RequestParam(required = false) Long classeId,
-			@RequestParam(required = false) Long typeVaccinId, @RequestParam(required = false) String q,
-			@RequestParam(required = false) String numeroLot) {
-		if (eleveId != null) {
-			return vaccinationService.listerParEleve(eleveId);
+	private final ObjectFactory factory = new ObjectFactory();
+
+	@PayloadRoot(namespace = NS, localPart = "GetVaccinationsListQuery")
+	@ResponsePayload
+	public JAXBElement<VaccinationDtoList> lister(@RequestPayload JAXBElement<GetVaccinationsListQueryType> request) {
+		GetVaccinationsListQueryType query = request != null ? request.getValue() : null;
+		Long eleveId = query != null ? query.getEleveId() : null;
+		List<VaccinationDto> items = eleveId != null ? service.listerParEleve(eleveId)
+				: service.listerFiltres(query != null ? query.getNiveauId() : null,
+						query != null ? query.getClasseId() : null, query != null ? query.getTypeVaccinId() : null,
+						query != null ? query.getQ() : null, query != null ? query.getNumeroLot() : null);
+		VaccinationDtoList response = factory.createVaccinationDtoList();
+		for (VaccinationDto dto : items) {
+			response.getItem().add(dto);
 		}
-		return vaccinationService.listerFiltres(niveauId, classeId, typeVaccinId, q, numeroLot);
+		return factory.createVaccinationListResponse(response);
 	}
 
-	@PostMapping
-	@ResponseStatus(HttpStatus.CREATED)
-	public VaccinationDto creer(@Valid @RequestBody VaccinationRequest request) {
-		return vaccinationService.creer(request);
+	@PayloadRoot(namespace = NS, localPart = "PostVaccinationBody")
+	@ResponsePayload
+	public JAXBElement<com.tn.educanet.pfe.api.vaccinations.schema.VaccinationDto> creer(
+			@RequestPayload JAXBElement<VaccinationRequest> request) {
+		VaccinationDto created = service.creer(request.getValue());
+		return factory.createVaccinationResponse(created);
 	}
 
-	@PutMapping("/{id}")
-	public VaccinationDto modifier(@PathVariable Long id, @Valid @RequestBody VaccinationRequest request) {
-		return vaccinationService.modifier(id, request);
+	@PayloadRoot(namespace = NS, localPart = "PutVaccinationBody")
+	@ResponsePayload
+	public JAXBElement<com.tn.educanet.pfe.api.vaccinations.schema.VaccinationDto> modifier(
+			@RequestPayload JAXBElement<UpdateVaccinationRequestType> request) {
+		UpdateVaccinationRequestType value = request.getValue();
+		VaccinationDto updated = service.modifier(value.getId(), value.getBody());
+		return factory.createVaccinationResponse(updated);
 	}
 
-	@DeleteMapping("/{id}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void supprimer(@PathVariable Long id) {
-		vaccinationService.supprimer(id);
+	@PayloadRoot(namespace = NS, localPart = "DeleteVaccinationRequest")
+	@ResponsePayload
+	public JAXBElement<DeleteVaccinationResponseType> supprimer(
+			@RequestPayload JAXBElement<DeleteVaccinationRequestType> request) {
+		service.supprimer(request.getValue().getId());
+		DeleteVaccinationResponseType response = factory.createDeleteVaccinationResponseType();
+		response.setSuccess(true);
+		return factory.createDeleteVaccinationResponse(response);
 	}
+
 }

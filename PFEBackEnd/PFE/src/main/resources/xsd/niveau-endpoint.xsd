@@ -1,47 +1,84 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-    targetNamespace="http://www.educanet.tn.com/pfe/api/niveaux/schema"
-    xmlns:tns="http://www.educanet.tn.com/pfe/api/niveaux/schema"
-    elementFormDefault="qualified"
-    version="1.0">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xsd:schema elementFormDefault="qualified" version="1.0"
+	targetNamespace="http://www.educanet.tn.com/pfe/api/niveaux/schema"
+	xmlns:tns="http://www.educanet.tn.com/pfe/api/niveaux/schema"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
+	jaxb:version="3.0">
 
-    <xsd:annotation>
-        <xsd:documentation xml:lang="fr">
-            NiveauEndpoint — /api/niveaux ; GET/PUT/DELETE /api/niveaux/{id}.
-        </xsd:documentation>
-    </xsd:annotation>
+	<xsd:annotation>
+		<xsd:documentation xml:lang="fr">
+			NiveauEndpoint — contrat SOAP (liste, création, mise à jour, suppression).
+		</xsd:documentation>
+		<xsd:appinfo>
+			<jaxb:schemaBindings>
+				<jaxb:package name="com.tn.educanet.pfe.api.niveaux.schema" />
+			</jaxb:schemaBindings>
+		</xsd:appinfo>
+	</xsd:annotation>
 
-    <xsd:complexType name="NiveauRequest">
-        <xsd:sequence>
-            <xsd:element name="nom" type="xsd:string"/>
-            <xsd:element name="anneeScolaire" type="xsd:string" minOccurs="0"/>
-        </xsd:sequence>
-    </xsd:complexType>
+	<xsd:complexType name="NiveauRequest">
+		<xsd:sequence>
+			<xsd:element name="nom" type="xsd:string"/>
+			<xsd:element name="anneeScolaire" type="xsd:string" minOccurs="0"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:complexType name="NiveauDto">
-        <xsd:sequence>
-            <xsd:element name="id" type="xsd:long" minOccurs="0"/>
-            <xsd:element name="nom" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="anneeScolaire" type="xsd:string" minOccurs="0"/>
-        </xsd:sequence>
-    </xsd:complexType>
+	<xsd:complexType name="NiveauDto">
+		<xsd:sequence>
+			<xsd:element name="id" type="xsd:long" minOccurs="0"/>
+			<xsd:element name="nom" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="anneeScolaire" type="xsd:string" minOccurs="0"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:complexType name="NiveauDtoList">
-        <xsd:sequence>
-            <xsd:element name="item" type="tns:NiveauDto" minOccurs="0" maxOccurs="unbounded"/>
-        </xsd:sequence>
-    </xsd:complexType>
+	<xsd:complexType name="NiveauDtoList">
+		<xsd:sequence>
+			<xsd:element name="item" type="tns:NiveauDto" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:element name="GetNiveauxListQuery" type="tns:GetNiveauxListQueryType"/>
-    <xsd:complexType name="GetNiveauxListQueryType">
-        <xsd:sequence>
-            <xsd:element name="annee" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="nom" type="xsd:string" minOccurs="0"/>
-        </xsd:sequence>
-    </xsd:complexType>
+	<xsd:element name="GetNiveauxListQuery" type="tns:GetNiveauxListQueryType"/>
+	<xsd:complexType name="GetNiveauxListQueryType">
+		<xsd:sequence>
+			<xsd:element name="annee" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="nom" type="xsd:string" minOccurs="0"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:element name="PostNiveauBody" type="tns:NiveauRequest"/>
-    <xsd:element name="PutNiveauBody" type="tns:NiveauRequest"/>
-    <xsd:element name="NiveauResponse" type="tns:NiveauDto"/>
-    <xsd:element name="NiveauListResponse" type="tns:NiveauDtoList"/>
+	<xsd:element name="PostNiveauBody" type="tns:NiveauRequest"/>
+	<xsd:element name="PutNiveauBody" type="tns:UpdateNiveauRequestType"/>
+	<xsd:complexType name="UpdateNiveauRequestType">
+		<xsd:sequence>
+			<xsd:element name="id" type="xsd:long"/>
+			<xsd:element name="body" type="tns:NiveauRequest"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="NiveauResponse" type="tns:NiveauDto"/>
+	<xsd:element name="NiveauListResponse" type="tns:NiveauDtoList"/>
+	<xsd:element name="DeleteNiveauRequest" type="tns:DeleteNiveauRequestType"/>
+	<xsd:complexType name="DeleteNiveauRequestType">
+		<xsd:sequence>
+			<xsd:element name="id" type="xsd:long"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="DeleteNiveauResponse" type="tns:DeleteNiveauResponseType"/>
+	<xsd:complexType name="DeleteNiveauResponseType">
+		<xsd:sequence>
+			<xsd:element name="success" type="xsd:boolean"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 </xsd:schema>

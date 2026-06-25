@@ -22,4 +22,8 @@ public interface ClasseRepository extends JpaRepository<Classe, Long>, JpaSpecif
 
 	@Query("SELECT c FROM Classe c JOIN FETCH c.niveau WHERE c.id = :id")
 	Optional<Classe> findByIdFetchNiveau(@Param("id") Long id);
+
+	boolean existsByNomIgnoreCaseAndNiveauId(String nom, Long niveauId);
+
+	boolean existsByNomIgnoreCaseAndNiveauIdAndIdNot(String nom, Long niveauId, Long id);
 }

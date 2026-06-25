@@ -1,68 +1,114 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-    targetNamespace="http://www.educanet.tn.com/pfe/api/rappels-vaccination/schema"
-    xmlns:tns="http://www.educanet.tn.com/pfe/api/rappels-vaccination/schema"
-    elementFormDefault="qualified"
-    version="1.0">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xsd:schema elementFormDefault="qualified" version="1.0"
+	targetNamespace="http://www.educanet.tn.com/pfe/api/rappels-vaccination/schema"
+	xmlns:tns="http://www.educanet.tn.com/pfe/api/rappels-vaccination/schema"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
+	jaxb:version="3.0">
 
-    <xsd:annotation>
-        <xsd:documentation xml:lang="fr">
-            RappelVaccinationEndpoint — /api/rappels-vaccination
-        </xsd:documentation>
-    </xsd:annotation>
+	<xsd:annotation>
+		<xsd:documentation xml:lang="fr">Rappels de vaccination — liste, création, mise à jour, suppression (SOAP).</xsd:documentation>
+		<xsd:appinfo>
+			<jaxb:schemaBindings>
+				<jaxb:package name="com.tn.educanet.pfe.api.rappels.vaccination.schema" />
+			</jaxb:schemaBindings>
+		</xsd:appinfo>
+	</xsd:annotation>
 
-    <xsd:complexType name="RappelVaccinationClasseDto">
-        <xsd:sequence>
-            <xsd:element name="id" type="xsd:long" minOccurs="0"/>
-            <xsd:element name="nom" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="niveauId" type="xsd:long" minOccurs="0"/>
-            <xsd:element name="niveauNom" type="xsd:string" minOccurs="0"/>
-        </xsd:sequence>
-    </xsd:complexType>
+	<xsd:complexType name="RappelVaccinationClasseDto">
+		<xsd:sequence>
+			<xsd:element name="id" type="xsd:long" minOccurs="0"/>
+			<xsd:element name="nom" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="niveauId" type="xsd:long" minOccurs="0"/>
+			<xsd:element name="niveauNom" type="xsd:string" minOccurs="0"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:complexType name="RappelVaccinationRequest">
-        <xsd:annotation>
-            <xsd:documentation>JSON: propriété tableau "classeIds" (liste de long).</xsd:documentation>
-        </xsd:annotation>
-        <xsd:sequence>
-            <xsd:element name="datePrevue" type="xsd:date"/>
-            <xsd:element name="typeVaccinId" type="xsd:long"/>
-            <xsd:element name="classeIds">
-                <xsd:complexType>
-                    <xsd:sequence>
-                        <xsd:element name="classeId" type="xsd:long" minOccurs="1" maxOccurs="unbounded"/>
-                    </xsd:sequence>
-                </xsd:complexType>
-            </xsd:element>
-            <xsd:element name="remarque" type="xsd:string" minOccurs="0"/>
-        </xsd:sequence>
-    </xsd:complexType>
+	<xsd:complexType name="RappelVaccinationClasseIds">
+		<xsd:sequence>
+			<xsd:element name="classeId" type="xsd:long" minOccurs="1" maxOccurs="unbounded"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:complexType name="RappelVaccinationDto">
-        <xsd:sequence>
-            <xsd:element name="id" type="xsd:long" minOccurs="0"/>
-            <xsd:element name="datePrevue" type="xsd:date" minOccurs="0"/>
-            <xsd:element name="typeVaccinId" type="xsd:long" minOccurs="0"/>
-            <xsd:element name="typeVaccinNom" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="classes" minOccurs="0">
-                <xsd:complexType>
-                    <xsd:sequence>
-                        <xsd:element name="item" type="tns:RappelVaccinationClasseDto" minOccurs="0" maxOccurs="unbounded"/>
-                    </xsd:sequence>
-                </xsd:complexType>
-            </xsd:element>
-            <xsd:element name="remarque" type="xsd:string" minOccurs="0"/>
-        </xsd:sequence>
-    </xsd:complexType>
+	<xsd:complexType name="RappelVaccinationRequest">
+		<xsd:sequence>
+			<xsd:element name="datePrevue" type="xsd:date"/>
+			<xsd:element name="typeVaccinId" type="xsd:long"/>
+			<xsd:element name="classeIds" type="tns:RappelVaccinationClasseIds"/>
+			<xsd:element name="remarque" type="xsd:string" minOccurs="0"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:complexType name="RappelVaccinationDtoList">
-        <xsd:sequence>
-            <xsd:element name="item" type="tns:RappelVaccinationDto" minOccurs="0" maxOccurs="unbounded"/>
-        </xsd:sequence>
-    </xsd:complexType>
+	<xsd:complexType name="RappelVaccinationDto">
+		<xsd:sequence>
+			<xsd:element name="id" type="xsd:long" minOccurs="0"/>
+			<xsd:element name="datePrevue" type="xsd:date" minOccurs="0"/>
+			<xsd:element name="typeVaccinId" type="xsd:long" minOccurs="0"/>
+			<xsd:element name="typeVaccinNom" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="classes" minOccurs="0">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="item" type="tns:RappelVaccinationClasseDto" minOccurs="0" maxOccurs="unbounded"/>
+						<xsd:any namespace="##other" processContents="lax"
+							minOccurs="0" maxOccurs="unbounded" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="remarque" type="xsd:string" minOccurs="0"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:element name="PostRappelBody" type="tns:RappelVaccinationRequest"/>
-    <xsd:element name="PutRappelBody" type="tns:RappelVaccinationRequest"/>
-    <xsd:element name="RappelResponse" type="tns:RappelVaccinationDto"/>
-    <xsd:element name="RappelListResponse" type="tns:RappelVaccinationDtoList"/>
+	<xsd:complexType name="RappelVaccinationDtoList">
+		<xsd:sequence>
+			<xsd:element name="item" type="tns:RappelVaccinationDto" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:element name="GetRappelsListQuery" type="tns:GetRappelsListQueryType"/>
+	<xsd:complexType name="GetRappelsListQueryType">
+		<xsd:sequence>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:element name="PostRappelBody" type="tns:RappelVaccinationRequest"/>
+	<xsd:element name="PutRappelBody" type="tns:UpdateRappelRequestType"/>
+	<xsd:complexType name="UpdateRappelRequestType">
+		<xsd:sequence>
+			<xsd:element name="id" type="xsd:long"/>
+			<xsd:element name="body" type="tns:RappelVaccinationRequest"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:element name="RappelResponse" type="tns:RappelVaccinationDto"/>
+	<xsd:element name="RappelListResponse" type="tns:RappelVaccinationDtoList"/>
+
+	<xsd:element name="DeleteRappelRequest" type="tns:DeleteRappelRequestType"/>
+	<xsd:complexType name="DeleteRappelRequestType">
+		<xsd:sequence>
+			<xsd:element name="id" type="xsd:long"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="DeleteRappelResponse" type="tns:DeleteRappelResponseType"/>
+	<xsd:complexType name="DeleteRappelResponseType">
+		<xsd:sequence>
+			<xsd:element name="success" type="xsd:boolean"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 </xsd:schema>

@@ -1,39 +1,81 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-    targetNamespace="http://www.educanet.tn.com/pfe/api/vaccins/types/schema"
-    xmlns:tns="http://www.educanet.tn.com/pfe/api/vaccins/types/schema"
-    elementFormDefault="qualified"
-    version="1.0">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xsd:schema elementFormDefault="qualified" version="1.0"
+	targetNamespace="http://www.educanet.tn.com/pfe/api/vaccins/types/schema"
+	xmlns:tns="http://www.educanet.tn.com/pfe/api/vaccins/types/schema"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
+	jaxb:version="3.0">
 
-    <xsd:annotation>
-        <xsd:documentation xml:lang="fr">
-            TypeVaccinEndpoint — /api/vaccins/types
-        </xsd:documentation>
-    </xsd:annotation>
+	<xsd:annotation>
+		<xsd:documentation xml:lang="fr">TypeVaccin — contrat SOAP (liste, création, mise à jour, suppression).</xsd:documentation>
+		<xsd:appinfo>
+			<jaxb:schemaBindings>
+				<jaxb:package name="com.tn.educanet.pfe.api.vaccins.types.schema" />
+			</jaxb:schemaBindings>
+		</xsd:appinfo>
+	</xsd:annotation>
 
-    <xsd:complexType name="TypeVaccinRequest">
-        <xsd:sequence>
-            <xsd:element name="nom" type="xsd:string"/>
-            <xsd:element name="quantiteInitiale" type="xsd:int"/>
-        </xsd:sequence>
-    </xsd:complexType>
+	<xsd:complexType name="TypeVaccinRequest">
+		<xsd:sequence>
+			<xsd:element name="nom" type="xsd:string"/>
+			<xsd:element name="quantiteInitiale" type="xsd:int"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:complexType name="TypeVaccinDto">
-        <xsd:sequence>
-            <xsd:element name="id" type="xsd:long" minOccurs="0"/>
-            <xsd:element name="nom" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="quantiteTotale" type="xsd:int" minOccurs="0"/>
-        </xsd:sequence>
-    </xsd:complexType>
+	<xsd:complexType name="TypeVaccinDto">
+		<xsd:sequence>
+			<xsd:element name="id" type="xsd:long" minOccurs="0"/>
+			<xsd:element name="nom" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="quantiteTotale" type="xsd:int" minOccurs="0"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:complexType name="TypeVaccinDtoList">
-        <xsd:sequence>
-            <xsd:element name="item" type="tns:TypeVaccinDto" minOccurs="0" maxOccurs="unbounded"/>
-        </xsd:sequence>
-    </xsd:complexType>
+	<xsd:complexType name="TypeVaccinDtoList">
+		<xsd:sequence>
+			<xsd:element name="item" type="tns:TypeVaccinDto" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:element name="PostTypeVaccinBody" type="tns:TypeVaccinRequest"/>
-    <xsd:element name="PutTypeVaccinBody" type="tns:TypeVaccinRequest"/>
-    <xsd:element name="TypeVaccinResponse" type="tns:TypeVaccinDto"/>
-    <xsd:element name="TypeVaccinListResponse" type="tns:TypeVaccinDtoList"/>
+	<xsd:element name="GetTypesVaccinListQuery" type="tns:GetTypesVaccinListQueryType"/>
+	<xsd:complexType name="GetTypesVaccinListQueryType">
+		<xsd:sequence>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:element name="PostTypeVaccinBody" type="tns:TypeVaccinRequest"/>
+	<xsd:element name="PutTypeVaccinBody" type="tns:UpdateTypeVaccinRequestType"/>
+	<xsd:complexType name="UpdateTypeVaccinRequestType">
+		<xsd:sequence>
+			<xsd:element name="id" type="xsd:long"/>
+			<xsd:element name="body" type="tns:TypeVaccinRequest"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="TypeVaccinResponse" type="tns:TypeVaccinDto"/>
+	<xsd:element name="TypeVaccinListResponse" type="tns:TypeVaccinDtoList"/>
+
+	<xsd:element name="DeleteTypeVaccinRequest" type="tns:DeleteTypeVaccinRequestType"/>
+	<xsd:complexType name="DeleteTypeVaccinRequestType">
+		<xsd:sequence>
+			<xsd:element name="id" type="xsd:long"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="DeleteTypeVaccinResponse" type="tns:DeleteTypeVaccinResponseType"/>
+	<xsd:complexType name="DeleteTypeVaccinResponseType">
+		<xsd:sequence>
+			<xsd:element name="success" type="xsd:boolean"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 </xsd:schema>

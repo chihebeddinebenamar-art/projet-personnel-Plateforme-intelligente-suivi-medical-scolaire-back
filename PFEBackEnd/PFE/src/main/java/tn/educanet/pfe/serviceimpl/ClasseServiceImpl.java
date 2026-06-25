@@ -2,13 +2,17 @@ package tn.educanet.pfe.serviceimpl;
 
 import java.util.List;
 
+import org.dozer.Mapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import tn.educanet.pfe.api.dto.ClasseDto;
-import tn.educanet.pfe.api.dto.ClasseRequest;
+import jakarta.annotation.Resource;
+
+import com.tn.educanet.pfe.api.classes.schema.ClasseDto;
+import com.tn.educanet.pfe.api.classes.schema.ClasseRequest;
+
 import tn.educanet.pfe.exception.BusinessException;
 import tn.educanet.pfe.persistence.Classe;
 import tn.educanet.pfe.persistence.Niveau;
@@ -19,13 +23,13 @@ import tn.educanet.pfe.service.ClasseService;
 @Service
 public class ClasseServiceImpl implements ClasseService {
 
-	private final ClasseRepository classeRepository;
-	private final NiveauRepository niveauRepository;
+	@Resource
+	private ClasseRepository classeRepository;
 
-	public ClasseServiceImpl(ClasseRepository classeRepository, NiveauRepository niveauRepository) {
-		this.classeRepository = classeRepository;
-		this.niveauRepository = niveauRepository;
-	}
+	@Resource
+	private NiveauRepository niveauRepository;
+	@Resource
+	private Mapper mapper;
 
 	private static int niveauOrdrePourColonneLegacy(Niveau niveau) {
 		Long id = niveau.getId();
@@ -51,13 +55,14 @@ public class ClasseServiceImpl implements ClasseService {
 					.filter(c -> c.getNom() != null && c.getNom().toLowerCase().contains(n))
 					.toList();
 		}
-		return list.stream().map(ClasseDto::from).toList();
+		return list.stream().map(c -> mapper.map(c, ClasseDto.class)).toList();
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<ClasseDto> parNiveau(Long niveauId) {
-		return classeRepository.findByNiveauIdOrderByNomAsc(niveauId).stream().map(ClasseDto::from).toList();
+		return classeRepository.findByNiveauIdOrderByNomAsc(niveauId).stream()
+				.map(c -> mapper.map(c, ClasseDto.class)).toList();
 	}
 
 	@Override
@@ -65,11 +70,18 @@ public class ClasseServiceImpl implements ClasseService {
 	public ClasseDto creer(ClasseRequest request) {
 		Niveau niveau = niveauRepository.findById(request.getNiveauId())
 				.orElseThrow(() -> new BusinessException("Niveau introuvable"));
+		String nom = request.getNom() != null ? request.getNom().trim() : null;
+		if (!StringUtils.hasText(nom)) {
+			throw new BusinessException("Le nom de la classe est obligatoire.");
+		}
+		if (classeRepository.existsByNomIgnoreCaseAndNiveauId(nom, request.getNiveauId())) {
+			throw new BusinessException("Cette classe existe deja dans ce niveau.");
+		}
 		Classe c = new Classe();
-		c.setNom(request.getNom());
+		c.setNom(nom);
 		c.setNiveau(niveau);
 		c.setNiveauOrdre(niveauOrdrePourColonneLegacy(niveau));
-		return ClasseDto.from(classeRepository.save(c));
+		return mapper.map(classeRepository.save(c), ClasseDto.class);
 	}
 
 	@Override
@@ -78,10 +90,17 @@ public class ClasseServiceImpl implements ClasseService {
 		Classe c = classeRepository.findByIdFetchNiveau(id).orElseThrow(() -> new BusinessException("Classe introuvable"));
 		Niveau niveau = niveauRepository.findById(request.getNiveauId())
 				.orElseThrow(() -> new BusinessException("Niveau introuvable"));
-		c.setNom(request.getNom());
+		String nom = request.getNom() != null ? request.getNom().trim() : null;
+		if (!StringUtils.hasText(nom)) {
+			throw new BusinessException("Le nom de la classe est obligatoire.");
+		}
+		if (classeRepository.existsByNomIgnoreCaseAndNiveauIdAndIdNot(nom, request.getNiveauId(), id)) {
+			throw new BusinessException("Une autre classe existe deja avec le meme nom dans ce niveau.");
+		}
+		c.setNom(nom);
 		c.setNiveau(niveau);
 		c.setNiveauOrdre(niveauOrdrePourColonneLegacy(niveau));
-		return ClasseDto.from(classeRepository.save(c));
+		return mapper.map(classeRepository.save(c), ClasseDto.class);
 	}
 
 	@Override
@@ -99,6 +118,6 @@ public class ClasseServiceImpl implements ClasseService {
 	@Transactional(readOnly = true)
 	public ClasseDto get(Long id) {
 		Classe c = classeRepository.findByIdFetchNiveau(id).orElseThrow(() -> new BusinessException("Classe introuvable"));
-		return ClasseDto.from(c);
+		return mapper.map(c, ClasseDto.class);
 	}
 }

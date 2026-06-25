@@ -5,12 +5,12 @@
 	
 	
 	<mapping type="one-way" wildcard="false">
-		<class-a>tn.educanet.backend.persistence.User</class-a>
-		<class-b>tn.educanet.business.ws.user.GetUserResponse
+		<class-a>tn.educanet.pfe.persistence.User</class-a>
+		<class-b>tn.educanet.business.ws.user.GetUserByIdResponse
 		</class-b>
 		<field>
 			<a>this</a>
-			<b>user</b>
+			<b>User</b>
 		</field>
 	</mapping>
 

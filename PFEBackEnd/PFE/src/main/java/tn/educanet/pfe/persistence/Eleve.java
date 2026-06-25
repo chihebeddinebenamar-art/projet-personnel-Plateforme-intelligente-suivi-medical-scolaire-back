@@ -39,6 +39,19 @@ public class Eleve implements Serializable {
 	@Column(name = "date_naissance")
 	private LocalDate dateNaissance;
 
+	@Column(name = "numero_parent", length = 32)
+	private String numeroParent;
+
+	@Column(name = "email_parent", length = 160)
+	private String emailParent;
+
+	@Column(name = "sexe", length = 16)
+	private String sexe;
+
+	/** Hash BCrypt du mot de passe parent (connexion espace parent). Jamais exposé via SOAP. */
+	@Column(name = "password_parent", length = 120)
+	private String passwordParent;
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "classe_id", nullable = false)
 	private Classe classe;
@@ -58,7 +71,9 @@ public class Eleve implements Serializable {
 	public Eleve() {
 	}
 
-	public Eleve(Long id, String matricule, String nom, String prenom, LocalDate dateNaissance, Classe classe,
+	public Eleve(Long id, String matricule, String nom, String prenom, LocalDate dateNaissance, String numeroParent,
+			String emailParent, String sexe,
+			Classe classe,
 			List<Vaccination> vaccinations, List<Consultation> consultations, List<Accident> accidents,
 			List<EleveMaladie> maladies) {
 		this.id = id;
@@ -66,6 +81,9 @@ public class Eleve implements Serializable {
 		this.nom = nom;
 		this.prenom = prenom;
 		this.dateNaissance = dateNaissance;
+		this.numeroParent = numeroParent;
+		this.emailParent = emailParent;
+		this.sexe = sexe;
 		this.classe = classe;
 		this.vaccinations = vaccinations;
 		this.consultations = consultations;
@@ -111,6 +129,38 @@ public class Eleve implements Serializable {
 
 	public void setDateNaissance(LocalDate dateNaissance) {
 		this.dateNaissance = dateNaissance;
+	}
+
+	public String getNumeroParent() {
+		return numeroParent;
+	}
+
+	public void setNumeroParent(String numeroParent) {
+		this.numeroParent = numeroParent;
+	}
+
+	public String getEmailParent() {
+		return emailParent;
+	}
+
+	public void setEmailParent(String emailParent) {
+		this.emailParent = emailParent;
+	}
+
+	public String getSexe() {
+		return sexe;
+	}
+
+	public void setSexe(String sexe) {
+		this.sexe = sexe;
+	}
+
+	public String getPasswordParent() {
+		return passwordParent;
+	}
+
+	public void setPasswordParent(String passwordParent) {
+		this.passwordParent = passwordParent;
 	}
 
 	public Classe getClasse() {

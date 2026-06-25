@@ -14,4 +14,8 @@ public interface NiveauRepository extends JpaRepository<Niveau, Long>, JpaSpecif
 	List<Niveau> findByAnneeScolaireContainingIgnoreCase(String annee);
 
 	List<Niveau> findByNomContainingIgnoreCase(String nom);
+
+	boolean existsByNomIgnoreCaseAndAnneeScolaireIgnoreCase(String nom, String anneeScolaire);
+
+	boolean existsByNomIgnoreCaseAndAnneeScolaireIgnoreCaseAndIdNot(String nom, String anneeScolaire, Long id);
 }

@@ -1,50 +1,59 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-    targetNamespace="http://www.educanet.tn.com/pfe/api/maladies/schema"
-    xmlns:tns="http://www.educanet.tn.com/pfe/api/maladies/schema"
-    elementFormDefault="qualified"
-    version="1.0">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xsd:schema elementFormDefault="qualified" version="1.0"
+	targetNamespace="http://www.educanet.tn.com/pfe/api/maladies/schema"
+	xmlns:tns="http://www.educanet.tn.com/pfe/api/maladies/schema"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
+	jaxb:version="3.0">
 
-    <xsd:annotation>
-        <xsd:documentation xml:lang="fr">
-            MaladiesEndpoint — GET uniquement /api/maladies — liste globale (filtres niveauId, classeId, q).
-        </xsd:documentation>
-    </xsd:annotation>
+	<xsd:annotation>
+		<xsd:documentation xml:lang="fr">Liste globale allergies / maladies chroniques (GET avec filtres).</xsd:documentation>
+		<xsd:appinfo>
+			<jaxb:schemaBindings>
+				<jaxb:package name="com.tn.educanet.pfe.api.maladies.schema" />
+			</jaxb:schemaBindings>
+		</xsd:appinfo>
+	</xsd:annotation>
 
-    <xsd:simpleType name="TypeMaladieEleve">
-        <xsd:restriction base="xsd:string">
-            <xsd:enumeration value="ALLERGIE"/>
-            <xsd:enumeration value="MALADIE_CHRONIQUE"/>
-        </xsd:restriction>
-    </xsd:simpleType>
+	<xsd:simpleType name="TypeMaladieEleve">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="ALLERGIE"/>
+			<xsd:enumeration value="MALADIE_CHRONIQUE"/>
+		</xsd:restriction>
+	</xsd:simpleType>
 
-    <xsd:complexType name="MaladieEleveListDto">
-        <xsd:sequence>
-            <xsd:element name="id" type="xsd:long" minOccurs="0"/>
-            <xsd:element name="eleveId" type="xsd:long" minOccurs="0"/>
-            <xsd:element name="type" type="tns:TypeMaladieEleve" minOccurs="0"/>
-            <xsd:element name="libelle" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="details" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="eleveNomComplet" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="classeNom" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="niveauNom" type="xsd:string" minOccurs="0"/>
-        </xsd:sequence>
-    </xsd:complexType>
+	<xsd:complexType name="MaladieEleveListDto">
+		<xsd:sequence>
+			<xsd:element name="id" type="xsd:long" minOccurs="0"/>
+			<xsd:element name="eleveId" type="xsd:long" minOccurs="0"/>
+			<xsd:element name="type" type="tns:TypeMaladieEleve" minOccurs="0"/>
+			<xsd:element name="libelle" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="details" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="eleveNomComplet" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="classeNom" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="niveauNom" type="xsd:string" minOccurs="0"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:complexType name="MaladieEleveListDtoList">
-        <xsd:sequence>
-            <xsd:element name="item" type="tns:MaladieEleveListDto" minOccurs="0" maxOccurs="unbounded"/>
-        </xsd:sequence>
-    </xsd:complexType>
+	<xsd:complexType name="MaladieEleveListDtoList">
+		<xsd:sequence>
+			<xsd:element name="item" type="tns:MaladieEleveListDto" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:element name="GetMaladiesListQuery" type="tns:GetMaladiesListQueryType"/>
-    <xsd:complexType name="GetMaladiesListQueryType">
-        <xsd:sequence>
-            <xsd:element name="niveauId" type="xsd:long" minOccurs="0"/>
-            <xsd:element name="classeId" type="xsd:long" minOccurs="0"/>
-            <xsd:element name="q" type="xsd:string" minOccurs="0"/>
-        </xsd:sequence>
-    </xsd:complexType>
+	<xsd:element name="GetMaladiesListQuery" type="tns:GetMaladiesListQueryType"/>
+	<xsd:complexType name="GetMaladiesListQueryType">
+		<xsd:sequence>
+			<xsd:element name="niveauId" type="xsd:long" minOccurs="0"/>
+			<xsd:element name="classeId" type="xsd:long" minOccurs="0"/>
+			<xsd:element name="q" type="xsd:string" minOccurs="0"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:element name="MaladieListResponse" type="tns:MaladieEleveListDtoList"/>
+	<xsd:element name="MaladieListResponse" type="tns:MaladieEleveListDtoList"/>
 </xsd:schema>

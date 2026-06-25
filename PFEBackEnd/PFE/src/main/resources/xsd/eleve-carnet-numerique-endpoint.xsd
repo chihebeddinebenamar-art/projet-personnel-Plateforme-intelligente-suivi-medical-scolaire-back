@@ -1,35 +1,101 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-    targetNamespace="http://www.educanet.tn.com/pfe/api/eleves/carnet-numerique/schema"
-    xmlns:tns="http://www.educanet.tn.com/pfe/api/eleves/carnet-numerique/schema"
-    elementFormDefault="qualified"
-    version="1.0">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xsd:schema elementFormDefault="qualified" version="1.0"
+	targetNamespace="http://www.educanet.tn.com/pfe/api/eleves/carnet-numerique/schema"
+	xmlns:tns="http://www.educanet.tn.com/pfe/api/eleves/carnet-numerique/schema"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
+	jaxb:version="3.0">
 
-    <xsd:annotation>
-        <xsd:documentation xml:lang="fr">
-            EleveCarnetNumeriqueEndpoint — base: /api/eleves/{eleveId}/carnet-numerique.
-            GET /image — corps binaire (image), pas JSON.
-            POST JSON — CarnetNumeriqueUploadRequest ; DELETE — sans corps.
-        </xsd:documentation>
-    </xsd:annotation>
+	<xsd:annotation>
+		<xsd:documentation xml:lang="fr">Carnet numérique — statut, image (octets), envoi, suppression.</xsd:documentation>
+		<xsd:appinfo>
+			<jaxb:schemaBindings>
+				<jaxb:package name="com.tn.educanet.pfe.api.eleves.carnetnumerique.schema" />
+			</jaxb:schemaBindings>
+		</xsd:appinfo>
+	</xsd:annotation>
 
-    <xsd:complexType name="CarnetNumeriqueUploadRequest">
-        <xsd:sequence>
-            <xsd:element name="image" type="xsd:string">
-                <xsd:annotation>
-                    <xsd:documentation>Image base64, avec ou sans préfixe data:image/...;base64,</xsd:documentation>
-                </xsd:annotation>
-            </xsd:element>
-        </xsd:sequence>
-    </xsd:complexType>
+	<xsd:complexType name="CarnetNumeriqueUploadRequest">
+		<xsd:sequence>
+			<xsd:element name="image" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>data URL ou base64 (optionnel si mise à jour texte seule)</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="description" type="xsd:string" minOccurs="0"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:element name="PostCarnetNumeriqueBody" type="tns:CarnetNumeriqueUploadRequest"/>
+	<xsd:complexType name="CreateCarnetUploadRequestType">
+		<xsd:sequence>
+			<xsd:element name="eleveId" type="xsd:long"/>
+			<xsd:element name="body" type="tns:CarnetNumeriqueUploadRequest"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:element name="PathEleveId">
-        <xsd:complexType>
-            <xsd:sequence>
-                <xsd:element name="eleveId" type="xsd:long"/>
-            </xsd:sequence>
-        </xsd:complexType>
-    </xsd:element>
+	<xsd:element name="PostCarnetNumeriqueBody" type="tns:CreateCarnetUploadRequestType"/>
+
+	<xsd:element name="GetCarnetStatusQuery" type="tns:GetCarnetStatusQueryType"/>
+	<xsd:complexType name="GetCarnetStatusQueryType">
+		<xsd:sequence>
+			<xsd:element name="eleveId" type="xsd:long"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="CarnetStatusResponse" type="tns:CarnetStatusResponseType"/>
+	<xsd:complexType name="CarnetStatusResponseType">
+		<xsd:sequence>
+			<xsd:element name="present" type="xsd:boolean"/>
+			<xsd:element name="version" type="xsd:long" minOccurs="0"/>
+			<xsd:element name="description" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="photoId" type="xsd:long" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:element name="GetCarnetImageQuery" type="tns:GetCarnetImageQueryType"/>
+	<xsd:complexType name="GetCarnetImageQueryType">
+		<xsd:sequence>
+			<xsd:element name="eleveId" type="xsd:long"/>
+			<xsd:element name="photoId" type="xsd:long" minOccurs="0"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="CarnetImageResponse" type="tns:CarnetImageResponseType"/>
+	<xsd:complexType name="CarnetImageResponseType">
+		<xsd:sequence>
+			<xsd:element name="contentType" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="data" type="xsd:base64Binary" minOccurs="0"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:element name="DeleteCarnetNumeriqueRequest" type="tns:DeleteCarnetNumeriqueRequestType"/>
+	<xsd:complexType name="DeleteCarnetNumeriqueRequestType">
+		<xsd:sequence>
+			<xsd:element name="eleveId" type="xsd:long"/>
+			<xsd:element name="photoId" type="xsd:long" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Si renseigné : supprime uniquement cette photo. Sinon : supprime tout le carnet.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="DeleteCarnetNumeriqueResponse" type="tns:DeleteCarnetNumeriqueResponseType"/>
+	<xsd:complexType name="DeleteCarnetNumeriqueResponseType">
+		<xsd:sequence>
+			<xsd:element name="success" type="xsd:boolean"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 </xsd:schema>

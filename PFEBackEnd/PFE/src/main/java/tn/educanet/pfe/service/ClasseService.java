@@ -2,8 +2,8 @@ package tn.educanet.pfe.service;
 
 import java.util.List;
 
-import tn.educanet.pfe.api.dto.ClasseDto;
-import tn.educanet.pfe.api.dto.ClasseRequest;
+import com.tn.educanet.pfe.api.classes.schema.ClasseDto;
+import com.tn.educanet.pfe.api.classes.schema.ClasseRequest;
 
 public interface ClasseService {
 

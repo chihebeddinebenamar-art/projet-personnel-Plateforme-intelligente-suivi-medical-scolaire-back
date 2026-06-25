@@ -1,12 +1,18 @@
 package tn.educanet.pfe.serviceimpl;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import org.dozer.Mapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
-import tn.educanet.pfe.api.dto.VaccinationDto;
-import tn.educanet.pfe.api.dto.VaccinationRequest;
+import jakarta.annotation.Resource;
+
+import com.tn.educanet.pfe.api.vaccinations.schema.VaccinationDto;
+import com.tn.educanet.pfe.api.vaccinations.schema.VaccinationRequest;
+
 import tn.educanet.pfe.exception.BusinessException;
 import tn.educanet.pfe.specification.VaccinationSpecification;
 import tn.educanet.pfe.persistence.Eleve;
@@ -15,27 +21,31 @@ import tn.educanet.pfe.persistence.Vaccination;
 import tn.educanet.pfe.repository.EleveRepository;
 import tn.educanet.pfe.repository.TypeVaccinRepository;
 import tn.educanet.pfe.repository.VaccinationRepository;
+import tn.educanet.pfe.service.ParentNotificationService;
 import tn.educanet.pfe.service.VaccinationService;
+import tn.educanet.pfe.util.SchemaDateUtils;
 
 @Service
 public class VaccinationServiceImpl implements VaccinationService {
 
-	private final VaccinationRepository vaccinationRepository;
-	private final EleveRepository eleveRepository;
-	private final TypeVaccinRepository typeVaccinRepository;
+	@Resource
+	private VaccinationRepository vaccinationRepository;
 
-	public VaccinationServiceImpl(VaccinationRepository vaccinationRepository, EleveRepository eleveRepository,
-			TypeVaccinRepository typeVaccinRepository) {
-		this.vaccinationRepository = vaccinationRepository;
-		this.eleveRepository = eleveRepository;
-		this.typeVaccinRepository = typeVaccinRepository;
-	}
+	@Resource
+	private EleveRepository eleveRepository;
+
+	@Resource
+	private TypeVaccinRepository typeVaccinRepository;
+	@Resource
+	private Mapper mapper;
+	@Resource
+	private ParentNotificationService parentNotificationService;
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<VaccinationDto> listerParEleve(Long eleveId) {
 		return vaccinationRepository.findByEleveIdOrderByDateVaccinationDesc(eleveId).stream()
-				.map(VaccinationDto::from).toList();
+				.map(this::mapVaccinationDto).toList();
 	}
 
 	@Override
@@ -44,7 +54,7 @@ public class VaccinationServiceImpl implements VaccinationService {
 			String numeroLot) {
 		return vaccinationRepository
 				.findAll(VaccinationSpecification.filtres(niveauId, classeId, typeVaccinId, q, numeroLot)).stream()
-				.map(VaccinationDto::from).toList();
+				.map(this::mapVaccinationDto).toList();
 	}
 
 	@Override
@@ -55,6 +65,12 @@ public class VaccinationServiceImpl implements VaccinationService {
 				.orElseThrow(() -> new BusinessException("Élève introuvable"));
 		TypeVaccin type = typeVaccinRepository.findById(request.getTypeVaccinId())
 				.orElseThrow(() -> new BusinessException("Type de vaccin introuvable"));
+		var dateVaccination = SchemaDateUtils.toLocalDate(request.getDateVaccination());
+		var datePrevue = SchemaDateUtils.toLocalDate(request.getDatePrevue());
+		String persistedStatus = resolvePersistenceStatus(request.getStatus(), dateVaccination);
+		if ("VACCINE".equals(persistedStatus) && dateVaccination == null) {
+			throw new BusinessException("La date de vaccination est obligatoire lorsque le statut est « Vacciné ».");
+		}
 		if (vaccinationRepository.existsByEleve_IdAndTypeVaccin_Id(request.getEleveId(), request.getTypeVaccinId())) {
 			throw new BusinessException(
 					"Cet élève a déjà une vaccination enregistrée pour ce type de vaccin. Impossible d'en ajouter une autre.");
@@ -69,11 +85,17 @@ public class VaccinationServiceImpl implements VaccinationService {
 		v.setEleve(eleve);
 		v.setTypeVaccin(type);
 		v.setDose(dose);
-		v.setDateVaccination(request.getDateVaccination());
-		v.setDatePrevue(request.getDatePrevue());
+		v.setDateVaccination(dateVaccination);
+		v.setDatePrevue(datePrevue);
 		v.setNumeroLot(request.getNumeroLot());
+		v.setStatus(persistedStatus);
 		Vaccination saved = vaccinationRepository.save(v);
-		return VaccinationDto.from(vaccinationRepository.findDetailById(saved.getId()).orElse(saved));
+		if ("EN_ATTENTE".equals(saved.getStatus())) {
+			parentNotificationService.publishVaccinationEnAttente(eleve, type.getNom(), datePrevue);
+		} else {
+			parentNotificationService.publishVaccination(eleve, type.getNom());
+		}
+		return mapVaccinationDto(vaccinationRepository.findDetailById(saved.getId()).orElse(saved));
 	}
 
 	@Override
@@ -115,11 +137,17 @@ public class VaccinationServiceImpl implements VaccinationService {
 		v.setEleve(eleve);
 		v.setTypeVaccin(newType);
 		v.setDose(newDose);
-		v.setDateVaccination(request.getDateVaccination());
-		v.setDatePrevue(request.getDatePrevue());
+		LocalDate newDateVaccination = SchemaDateUtils.toLocalDate(request.getDateVaccination());
+		String newStatus = resolvePersistenceStatus(request.getStatus(), newDateVaccination);
+		if ("VACCINE".equals(newStatus) && newDateVaccination == null) {
+			throw new BusinessException("La date de vaccination est obligatoire lorsque le statut est « Vacciné ».");
+		}
+		v.setDateVaccination(newDateVaccination);
+		v.setDatePrevue(SchemaDateUtils.toLocalDate(request.getDatePrevue()));
 		v.setNumeroLot(request.getNumeroLot());
+		v.setStatus(newStatus);
 		vaccinationRepository.save(v);
-		return VaccinationDto.from(vaccinationRepository.findDetailById(v.getId()).orElse(v));
+		return mapVaccinationDto(vaccinationRepository.findDetailById(v.getId()).orElse(v));
 	}
 
 	@Override
@@ -131,5 +159,53 @@ public class VaccinationServiceImpl implements VaccinationService {
 		type.setQuantiteTotale(type.getQuantiteTotale() + v.getDose());
 		typeVaccinRepository.save(type);
 		vaccinationRepository.delete(v);
+	}
+
+	private VaccinationDto mapVaccinationDto(Vaccination vaccination) {
+		VaccinationDto dto = mapper.map(vaccination, VaccinationDto.class);
+		dto.setEleveNomComplet(nomComplet(vaccination.getEleve()));
+		if (!StringUtils.hasText(dto.getStatus())) {
+			dto.setStatus(deriveStatusFromDates(vaccination.getDateVaccination()));
+		}
+		return dto;
+	}
+
+	private String resolvePersistenceStatus(String rawStatus, LocalDate dateVaccination) {
+		String normalized = normalizeVaccinationStatus(rawStatus);
+		if (normalized != null) {
+			return normalized;
+		}
+		return deriveStatusFromDates(dateVaccination);
+	}
+
+	private String normalizeVaccinationStatus(String raw) {
+		if (!StringUtils.hasText(raw)) {
+			return null;
+		}
+		String u = raw.trim().toUpperCase();
+		if ("VACCINE".equals(u) || "EN_ATTENTE".equals(u) || "MANQUANT".equals(u)) {
+			return u;
+		}
+		return "VACCINE";
+	}
+
+	private static String deriveStatusFromDates(LocalDate dateVaccination) {
+		if (dateVaccination == null) {
+			return "EN_ATTENTE";
+		}
+		LocalDate today = LocalDate.now();
+		if (dateVaccination.isAfter(today)) {
+			return "EN_ATTENTE";
+		}
+		return "VACCINE";
+	}
+
+	private String nomComplet(Eleve e) {
+		if (e == null) {
+			return "";
+		}
+		String nom = e.getNom() != null ? e.getNom() : "";
+		String prenom = e.getPrenom() != null ? e.getPrenom() : "";
+		return (nom + " " + prenom).trim();
 	}
 }

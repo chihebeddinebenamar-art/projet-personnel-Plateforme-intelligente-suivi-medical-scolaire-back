@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xsd:schema elementFormDefault="qualified" version="1.0"
+	targetNamespace="http://www.educanet.tn.com/pfe/api/eleves/photo-profil/schema"
+	xmlns:tns="http://www.educanet.tn.com/pfe/api/eleves/photo-profil/schema"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
+	jaxb:version="3.0">
+
+	<xsd:annotation>
+		<xsd:documentation xml:lang="fr">Photo de profil élève — statut, image (octets), envoi, suppression.</xsd:documentation>
+		<xsd:appinfo>
+			<jaxb:schemaBindings>
+				<jaxb:package name="com.tn.educanet.pfe.api.eleves.photoprofil.schema" />
+			</jaxb:schemaBindings>
+		</xsd:appinfo>
+	</xsd:annotation>
+
+	<xsd:complexType name="PhotoProfilUploadRequest">
+		<xsd:sequence>
+			<xsd:element name="image" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>data URL ou base64</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="CreatePhotoProfilUploadRequestType">
+		<xsd:sequence>
+			<xsd:element name="eleveId" type="xsd:long"/>
+			<xsd:element name="body" type="tns:PhotoProfilUploadRequest"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:element name="PostPhotoProfilBody" type="tns:CreatePhotoProfilUploadRequestType"/>
+
+	<xsd:element name="GetPhotoProfilStatusQuery" type="tns:GetPhotoProfilStatusQueryType"/>
+	<xsd:complexType name="GetPhotoProfilStatusQueryType">
+		<xsd:sequence>
+			<xsd:element name="eleveId" type="xsd:long"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="PhotoProfilStatusResponse" type="tns:PhotoProfilStatusResponseType"/>
+	<xsd:complexType name="PhotoProfilStatusResponseType">
+		<xsd:sequence>
+			<xsd:element name="present" type="xsd:boolean"/>
+			<xsd:element name="version" type="xsd:long" minOccurs="0"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:element name="GetPhotoProfilImageQuery" type="tns:GetPhotoProfilImageQueryType"/>
+	<xsd:complexType name="GetPhotoProfilImageQueryType">
+		<xsd:sequence>
+			<xsd:element name="eleveId" type="xsd:long"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="PhotoProfilImageResponse" type="tns:PhotoProfilImageResponseType"/>
+	<xsd:complexType name="PhotoProfilImageResponseType">
+		<xsd:sequence>
+			<xsd:element name="contentType" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="data" type="xsd:base64Binary" minOccurs="0"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:element name="DeletePhotoProfilRequest" type="tns:DeletePhotoProfilRequestType"/>
+	<xsd:complexType name="DeletePhotoProfilRequestType">
+		<xsd:sequence>
+			<xsd:element name="eleveId" type="xsd:long"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="DeletePhotoProfilResponse" type="tns:DeletePhotoProfilResponseType"/>
+	<xsd:complexType name="DeletePhotoProfilResponseType">
+		<xsd:sequence>
+			<xsd:element name="success" type="xsd:boolean"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

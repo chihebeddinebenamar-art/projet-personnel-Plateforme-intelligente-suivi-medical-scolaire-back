@@ -1,0 +1,178 @@
+<mappings xmlns="http://dozer.sourceforge.net"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://dozer.sourceforge.net http://dozer.sourceforge.net/schema/beanmapping.xsd">
+
+	<configuration>
+		<custom-converters>
+			<converter type="tn.educanet.pfe.dozer.LocalDateXmlGregorianCalendarConverter">
+				<class-a>java.time.LocalDate</class-a>
+				<class-b>javax.xml.datatype.XMLGregorianCalendar</class-b>
+			</converter>
+		</custom-converters>
+	</configuration>
+
+	<mapping type="one-way">
+		<class-a>tn.educanet.pfe.persistence.Niveau</class-a>
+		<class-b>com.tn.educanet.pfe.api.niveaux.schema.NiveauDto</class-b>
+	</mapping>
+
+	<mapping type="one-way" wildcard="false">
+		<class-a>tn.educanet.pfe.persistence.Classe</class-a>
+		<class-b>com.tn.educanet.pfe.api.classes.schema.ClasseDto</class-b>
+		<field><a>id</a><b>id</b></field>
+		<field><a>nom</a><b>nom</b></field>
+		<field><a>niveau.id</a><b>niveauId</b></field>
+		<field><a>niveau.nom</a><b>niveauNom</b></field>
+	</mapping>
+
+	<mapping type="one-way" wildcard="false">
+		<class-a>tn.educanet.pfe.persistence.Eleve</class-a>
+		<class-b>com.tn.educanet.pfe.api.eleves.schema.EleveDto</class-b>
+		<field><a>id</a><b>id</b></field>
+		<field><a>matricule</a><b>matricule</b></field>
+		<field><a>nom</a><b>nom</b></field>
+		<field><a>prenom</a><b>prenom</b></field>
+		<field><a>dateNaissance</a><b>dateNaissance</b></field>
+		<field><a>numeroParent</a><b>numeroParent</b></field>
+		<field><a>classe.id</a><b>classeId</b></field>
+		<field><a>classe.nom</a><b>classeNom</b></field>
+		<field><a>classe.niveau.id</a><b>niveauId</b></field>
+		<field><a>classe.niveau.nom</a><b>niveauNom</b></field>
+	</mapping>
+
+	<mapping type="one-way">
+		<class-a>tn.educanet.pfe.persistence.TypeVaccin</class-a>
+		<class-b>com.tn.educanet.pfe.api.vaccins.types.schema.TypeVaccinDto</class-b>
+	</mapping>
+
+	<mapping type="one-way" wildcard="false">
+		<class-a>tn.educanet.pfe.persistence.Vaccination</class-a>
+		<class-b>com.tn.educanet.pfe.api.vaccinations.schema.VaccinationDto</class-b>
+		<field><a>id</a><b>id</b></field>
+		<field><a>eleve.id</a><b>eleveId</b></field>
+		<field><a>eleve.classe.nom</a><b>classeNom</b></field>
+		<field><a>eleve.classe.niveau.nom</a><b>niveauNom</b></field>
+		<field><a>typeVaccin.id</a><b>typeVaccinId</b></field>
+		<field><a>typeVaccin.nom</a><b>typeVaccinNom</b></field>
+		<field><a>dose</a><b>dose</b></field>
+		<field><a>dateVaccination</a><b>dateVaccination</b></field>
+		<field><a>datePrevue</a><b>datePrevue</b></field>
+		<field><a>numeroLot</a><b>numeroLot</b></field>
+		<field><a>status</a><b>status</b></field>
+	</mapping>
+	<mapping type="one-way" wildcard="false">
+		<class-a>tn.educanet.pfe.persistence.Vaccination</class-a>
+		<class-b>com.tn.educanet.pfe.api.eleves.schema.VaccinationDto</class-b>
+		<field><a>id</a><b>id</b></field>
+		<field><a>eleve.id</a><b>eleveId</b></field>
+		<field><a>eleve.classe.nom</a><b>classeNom</b></field>
+		<field><a>eleve.classe.niveau.nom</a><b>niveauNom</b></field>
+		<field><a>typeVaccin.id</a><b>typeVaccinId</b></field>
+		<field><a>typeVaccin.nom</a><b>typeVaccinNom</b></field>
+		<field><a>dose</a><b>dose</b></field>
+		<field><a>dateVaccination</a><b>dateVaccination</b></field>
+		<field><a>datePrevue</a><b>datePrevue</b></field>
+		<field><a>numeroLot</a><b>numeroLot</b></field>
+		<field><a>status</a><b>status</b></field>
+	</mapping>
+
+	<mapping type="one-way" wildcard="false">
+		<class-a>tn.educanet.pfe.persistence.Consultation</class-a>
+		<class-b>com.tn.educanet.pfe.api.consultations.schema.ConsultationDto</class-b>
+		<field><a>id</a><b>id</b></field>
+		<field><a>eleve.id</a><b>eleveId</b></field>
+		<field><a>eleve.classe.nom</a><b>classeNom</b></field>
+		<field><a>eleve.classe.niveau.nom</a><b>niveauNom</b></field>
+		<field><a>dateConsultation</a><b>dateConsultation</b></field>
+		<field><a>temperature</a><b>temperature</b></field>
+		<field><a>vomissement</a><b>vomissement</b></field>
+		<field><a>diarrhee</a><b>diarrhee</b></field>
+		<field><a>rapport</a><b>rapport</b></field>
+		<field><a>prochaineConsultation</a><b>prochaineConsultation</b></field>
+		<field><a>traitement</a><b>traitement</b></field>
+	</mapping>
+	<mapping type="one-way" wildcard="false">
+		<class-a>tn.educanet.pfe.persistence.Consultation</class-a>
+		<class-b>com.tn.educanet.pfe.api.eleves.schema.ConsultationDto</class-b>
+		<field><a>id</a><b>id</b></field>
+		<field><a>eleve.id</a><b>eleveId</b></field>
+		<field><a>eleve.classe.nom</a><b>classeNom</b></field>
+		<field><a>eleve.classe.niveau.nom</a><b>niveauNom</b></field>
+		<field><a>dateConsultation</a><b>dateConsultation</b></field>
+		<field><a>temperature</a><b>temperature</b></field>
+		<field><a>vomissement</a><b>vomissement</b></field>
+		<field><a>diarrhee</a><b>diarrhee</b></field>
+		<field><a>rapport</a><b>rapport</b></field>
+		<field><a>prochaineConsultation</a><b>prochaineConsultation</b></field>
+		<field><a>traitement</a><b>traitement</b></field>
+	</mapping>
+
+	<mapping type="one-way" wildcard="false">
+		<class-a>tn.educanet.pfe.persistence.Accident</class-a>
+		<class-b>com.tn.educanet.pfe.api.accidents.schema.AccidentDto</class-b>
+		<field><a>id</a><b>id</b></field>
+		<field><a>eleve.id</a><b>eleveId</b></field>
+		<field><a>eleve.classe.nom</a><b>classeNom</b></field>
+		<field><a>eleve.classe.niveau.nom</a><b>niveauNom</b></field>
+		<field><a>dateAccident</a><b>dateAccident</b></field>
+		<field><a>description</a><b>description</b></field>
+		<field><a>diagnostic</a><b>diagnostic</b></field>
+		<field><a>traitement</a><b>traitement</b></field>
+		<field><a>etat</a><b>etat</b></field>
+	</mapping>
+	<mapping type="one-way" wildcard="false">
+		<class-a>tn.educanet.pfe.persistence.Accident</class-a>
+		<class-b>com.tn.educanet.pfe.api.eleves.schema.AccidentDto</class-b>
+		<field><a>id</a><b>id</b></field>
+		<field><a>eleve.id</a><b>eleveId</b></field>
+		<field><a>eleve.classe.nom</a><b>classeNom</b></field>
+		<field><a>eleve.classe.niveau.nom</a><b>niveauNom</b></field>
+		<field><a>dateAccident</a><b>dateAccident</b></field>
+		<field><a>description</a><b>description</b></field>
+		<field><a>diagnostic</a><b>diagnostic</b></field>
+		<field><a>traitement</a><b>traitement</b></field>
+		<field><a>etat</a><b>etat</b></field>
+	</mapping>
+
+	<mapping type="one-way" wildcard="false">
+		<class-a>tn.educanet.pfe.persistence.EleveMaladie</class-a>
+		<class-b>com.tn.educanet.pfe.api.eleves.maladies.schema.MaladieEleveDto</class-b>
+		<field><a>id</a><b>id</b></field>
+		<field><a>eleve.id</a><b>eleveId</b></field>
+		<field><a>type</a><b>type</b></field>
+		<field><a>libelle</a><b>libelle</b></field>
+		<field><a>details</a><b>details</b></field>
+	</mapping>
+	<mapping type="one-way" wildcard="false">
+		<class-a>tn.educanet.pfe.persistence.EleveMaladie</class-a>
+		<class-b>com.tn.educanet.pfe.api.eleves.schema.MaladieEleveDto</class-b>
+		<field><a>id</a><b>id</b></field>
+		<field><a>eleve.id</a><b>eleveId</b></field>
+		<field><a>type</a><b>type</b></field>
+		<field><a>libelle</a><b>libelle</b></field>
+		<field><a>details</a><b>details</b></field>
+	</mapping>
+
+	<mapping type="one-way" wildcard="false">
+		<class-a>tn.educanet.pfe.persistence.EleveMaladie</class-a>
+		<class-b>com.tn.educanet.pfe.api.maladies.schema.MaladieEleveListDto</class-b>
+		<field><a>id</a><b>id</b></field>
+		<field><a>eleve.id</a><b>eleveId</b></field>
+		<field><a>type</a><b>type</b></field>
+		<field><a>libelle</a><b>libelle</b></field>
+		<field><a>details</a><b>details</b></field>
+		<field><a>eleve.classe.nom</a><b>classeNom</b></field>
+		<field><a>eleve.classe.niveau.nom</a><b>niveauNom</b></field>
+	</mapping>
+
+	<mapping type="one-way" wildcard="false">
+		<class-a>tn.educanet.pfe.persistence.RappelVaccination</class-a>
+		<class-b>com.tn.educanet.pfe.api.rappels.vaccination.schema.RappelVaccinationDto</class-b>
+		<field><a>id</a><b>id</b></field>
+		<field><a>datePrevue</a><b>datePrevue</b></field>
+		<field><a>typeVaccin.id</a><b>typeVaccinId</b></field>
+		<field><a>typeVaccin.nom</a><b>typeVaccinNom</b></field>
+		<field><a>remarque</a><b>remarque</b></field>
+	</mapping>
+
+</mappings>

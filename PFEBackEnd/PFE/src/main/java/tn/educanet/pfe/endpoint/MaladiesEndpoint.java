@@ -2,30 +2,41 @@ package tn.educanet.pfe.endpoint;
 
 import java.util.List;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
-import tn.educanet.pfe.api.dto.MaladieEleveListDto;
+import com.tn.educanet.pfe.api.maladies.schema.GetMaladiesListQueryType;
+import com.tn.educanet.pfe.api.maladies.schema.MaladieEleveListDto;
+import com.tn.educanet.pfe.api.maladies.schema.MaladieEleveListDtoList;
+import com.tn.educanet.pfe.api.maladies.schema.ObjectFactory;
+
+import jakarta.annotation.Resource;
+import jakarta.xml.bind.JAXBElement;
 import tn.educanet.pfe.service.EleveMaladieService;
 
-/**
- * Liste globale des allergies / maladies chroniques (tous élèves), avec filtres.
- */
-@RestController
-@RequestMapping("/api/maladies")
+@Endpoint
 public class MaladiesEndpoint {
 
-	private final EleveMaladieService eleveMaladieService;
+	public static final String NS = "http://www.educanet.tn.com/pfe/api/maladies/schema";
 
-	public MaladiesEndpoint(EleveMaladieService eleveMaladieService) {
-		this.eleveMaladieService = eleveMaladieService;
-	}
+	@Resource
+	private EleveMaladieService service;
 
-	@GetMapping
-	public List<MaladieEleveListDto> lister(@RequestParam(required = false) Long niveauId,
-			@RequestParam(required = false) Long classeId, @RequestParam(required = false) String q) {
-		return eleveMaladieService.listerFiltres(niveauId, classeId, q);
+	private final ObjectFactory factory = new ObjectFactory();
+
+	@PayloadRoot(namespace = NS, localPart = "GetMaladiesListQuery")
+	@ResponsePayload
+	public JAXBElement<MaladieEleveListDtoList> lister(@RequestPayload JAXBElement<GetMaladiesListQueryType> request) {
+		GetMaladiesListQueryType query = request != null ? request.getValue() : null;
+		List<MaladieEleveListDto> items = service.listerFiltres(
+				query != null ? query.getNiveauId() : null, query != null ? query.getClasseId() : null,
+				query != null ? query.getQ() : null);
+		MaladieEleveListDtoList response = factory.createMaladieEleveListDtoList();
+		for (MaladieEleveListDto dto : items) {
+			response.getItem().add(dto);
+		}
+		return factory.createMaladieListResponse(response);
 	}
 }

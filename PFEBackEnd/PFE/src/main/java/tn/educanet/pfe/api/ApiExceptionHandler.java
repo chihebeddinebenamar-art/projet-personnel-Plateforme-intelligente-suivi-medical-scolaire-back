@@ -14,6 +14,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import tn.educanet.pfe.exception.BusinessException;
 
+/**
+ * Réponses JSON pour les contrôleurs REST restants ; les opérations exposées via SOAP
+ * renvoient les fautes applicatives via {@link tn.educanet.pfe.BusinessSoapFaultResolver}.
+ */
 @RestControllerAdvice
 public class ApiExceptionHandler {
 

@@ -1,53 +1,107 @@
 package tn.educanet.pfe.endpoint;
 
-import org.springframework.http.CacheControl;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
-import jakarta.validation.Valid;
-import tn.educanet.pfe.api.dto.CarnetNumeriqueUploadRequest;
+import com.tn.educanet.pfe.api.eleves.carnetnumerique.schema.CarnetImageResponseType;
+import com.tn.educanet.pfe.api.eleves.carnetnumerique.schema.CarnetStatusResponseType;
+import com.tn.educanet.pfe.api.eleves.carnetnumerique.schema.CreateCarnetUploadRequestType;
+import com.tn.educanet.pfe.api.eleves.carnetnumerique.schema.DeleteCarnetNumeriqueRequestType;
+import com.tn.educanet.pfe.api.eleves.carnetnumerique.schema.DeleteCarnetNumeriqueResponseType;
+import com.tn.educanet.pfe.api.eleves.carnetnumerique.schema.GetCarnetImageQueryType;
+import com.tn.educanet.pfe.api.eleves.carnetnumerique.schema.GetCarnetStatusQueryType;
+import com.tn.educanet.pfe.api.eleves.carnetnumerique.schema.ObjectFactory;
+
+import jakarta.annotation.Resource;
+import jakarta.xml.bind.JAXBElement;
+import tn.educanet.pfe.repository.EleveCarnetNumeriqueRepository;
 import tn.educanet.pfe.service.EleveCarnetNumeriqueService;
 
-@RestController
-@RequestMapping("/api/eleves/{eleveId}/carnet-numerique")
+/**
+ * Carnet numérique élève (SOAP). L’image est renvoyée en base64 dans {@link CarnetImageResponseType}.
+ */
+@Endpoint
 public class EleveCarnetNumeriqueEndpoint {
 
-	private final EleveCarnetNumeriqueService eleveCarnetNumeriqueService;
+	public static final String NS = "http://www.educanet.tn.com/pfe/api/eleves/carnet-numerique/schema";
 
-	public EleveCarnetNumeriqueEndpoint(EleveCarnetNumeriqueService eleveCarnetNumeriqueService) {
-		this.eleveCarnetNumeriqueService = eleveCarnetNumeriqueService;
-	}
+	@Resource
+	private EleveCarnetNumeriqueService eleveCarnetNumeriqueService;
 
-	@GetMapping("/image")
-	public ResponseEntity<byte[]> image(@PathVariable Long eleveId) {
-		if (!eleveCarnetNumeriqueService.hasImage(eleveId)) {
-			return ResponseEntity.notFound().build();
+	@Resource
+	private EleveCarnetNumeriqueRepository eleveCarnetNumeriqueRepository;
+
+	private final ObjectFactory factory = new ObjectFactory();
+
+	@PayloadRoot(namespace = NS, localPart = "GetCarnetStatusQuery")
+	@ResponsePayload
+	public JAXBElement<CarnetStatusResponseType> status(
+			@RequestPayload JAXBElement<GetCarnetStatusQueryType> request) {
+		Long eleveId = request.getValue().getEleveId();
+		boolean present = eleveCarnetNumeriqueService.hasImage(eleveId);
+		Long version = eleveCarnetNumeriqueRepository.findByEleveId(eleveId)
+				.map(c -> c.getUpdatedAt().toEpochMilli()).orElse(null);
+		CarnetStatusResponseType body = factory.createCarnetStatusResponseType();
+		body.setPresent(present);
+		body.setVersion(version);
+		body.setDescription(eleveCarnetNumeriqueService.getDescription(eleveId));
+		java.util.List<Long> photoIds = eleveCarnetNumeriqueService.listPhotoIds(eleveId);
+		if (body.getPhotoId() != null) {
+			body.getPhotoId().addAll(photoIds);
 		}
-		byte[] body = eleveCarnetNumeriqueService.getImageBytes(eleveId);
-		String ct = eleveCarnetNumeriqueService.getContentType(eleveId);
-		return ResponseEntity.ok().contentType(MediaType.parseMediaType(ct))
-				.cacheControl(CacheControl.noCache().mustRevalidate()).header(HttpHeaders.PRAGMA, "no-cache").body(body);
+		return factory.createCarnetStatusResponse(body);
 	}
 
-	@PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void upload(@PathVariable Long eleveId, @Valid @RequestBody CarnetNumeriqueUploadRequest request) {
-		eleveCarnetNumeriqueService.upload(eleveId, request);
+	@PayloadRoot(namespace = NS, localPart = "GetCarnetImageQuery")
+	@ResponsePayload
+	public JAXBElement<CarnetImageResponseType> image(
+			@RequestPayload JAXBElement<GetCarnetImageQueryType> request) {
+		Long eleveId = request.getValue().getEleveId();
+		Long photoId = request.getValue().getPhotoId();
+		eleveCarnetNumeriqueService.syncLegacyCarnetPhotos(eleveId);
+		CarnetImageResponseType body = factory.createCarnetImageResponseType();
+		if (!eleveCarnetNumeriqueService.hasImage(eleveId)) {
+			return factory.createCarnetImageResponse(body);
+		}
+		body.setContentType(eleveCarnetNumeriqueService.resolveContentType(eleveId, photoId));
+		body.setData(eleveCarnetNumeriqueService.getImageBytes(eleveId, photoId));
+		return factory.createCarnetImageResponse(body);
 	}
 
-	@DeleteMapping
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void supprimer(@PathVariable Long eleveId) {
-		eleveCarnetNumeriqueService.supprimer(eleveId);
+	@PayloadRoot(namespace = NS, localPart = "PostCarnetNumeriqueBody")
+	@ResponsePayload
+	public JAXBElement<CarnetStatusResponseType> upload(
+			@RequestPayload JAXBElement<CreateCarnetUploadRequestType> request) {
+		CreateCarnetUploadRequestType v = request.getValue();
+		eleveCarnetNumeriqueService.upload(v.getEleveId(), v.getBody().getImage(), v.getBody().getDescription());
+		Long version = eleveCarnetNumeriqueRepository.findByEleveId(v.getEleveId())
+				.map(c -> c.getUpdatedAt().toEpochMilli()).orElse(null);
+		CarnetStatusResponseType body = factory.createCarnetStatusResponseType();
+		body.setPresent(true);
+		body.setVersion(version);
+		body.setDescription(eleveCarnetNumeriqueService.getDescription(v.getEleveId()));
+		java.util.List<Long> photoIds = eleveCarnetNumeriqueService.listPhotoIds(v.getEleveId());
+		if (body.getPhotoId() != null) {
+			body.getPhotoId().addAll(photoIds);
+		}
+		return factory.createCarnetStatusResponse(body);
+	}
+
+	@PayloadRoot(namespace = NS, localPart = "DeleteCarnetNumeriqueRequest")
+	@ResponsePayload
+	public JAXBElement<DeleteCarnetNumeriqueResponseType> supprimer(
+			@RequestPayload JAXBElement<DeleteCarnetNumeriqueRequestType> request) {
+		Long eleveId = request.getValue().getEleveId();
+		Long photoId = request.getValue().getPhotoId();
+		if (photoId != null) {
+			eleveCarnetNumeriqueService.supprimerPhoto(eleveId, photoId);
+		} else {
+			eleveCarnetNumeriqueService.supprimer(eleveId);
+		}
+		DeleteCarnetNumeriqueResponseType body = factory.createDeleteCarnetNumeriqueResponseType();
+		body.setSuccess(true);
+		return factory.createDeleteCarnetNumeriqueResponse(body);
 	}
 }

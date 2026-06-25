@@ -1,160 +1,325 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-    targetNamespace="http://www.educanet.tn.com/pfe/api/eleves/schema"
-    xmlns:tns="http://www.educanet.tn.com/pfe/api/eleves/schema"
-    elementFormDefault="qualified"
-    version="1.0">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xsd:schema elementFormDefault="qualified" version="1.0"
+	targetNamespace="http://www.educanet.tn.com/pfe/api/eleves/schema"
+	xmlns:tns="http://www.educanet.tn.com/pfe/api/eleves/schema"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
+	jaxb:version="3.0">
 
-    <xsd:annotation>
-        <xsd:documentation xml:lang="fr">
-            EleveEndpoint — /api/eleves ; GET /by-classe/{idClasse} ; GET /{id}/fiche-medicale ; CRUD /{id}.
-            Carnet numérique: voir eleve-carnet-numerique-endpoint.xsd.
-        </xsd:documentation>
-    </xsd:annotation>
+	<xsd:annotation>
+		<xsd:documentation xml:lang="fr">
+			EleveEndpoint — contrat SOAP (liste, création, mise à jour, suppression, fiche médicale).
+		</xsd:documentation>
+		<xsd:appinfo>
+			<jaxb:schemaBindings>
+				<jaxb:package name="com.tn.educanet.pfe.api.eleves.schema" />
+			</jaxb:schemaBindings>
+		</xsd:appinfo>
+	</xsd:annotation>
 
-    <xsd:complexType name="EleveRequest">
-        <xsd:sequence>
-            <xsd:element name="matricule" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="nom" type="xsd:string"/>
-            <xsd:element name="prenom" type="xsd:string"/>
-            <xsd:element name="dateNaissance" type="xsd:date" minOccurs="0"/>
-            <xsd:element name="classeId" type="xsd:long"/>
-        </xsd:sequence>
-    </xsd:complexType>
+	<xsd:complexType name="EleveRequest">
+		<xsd:sequence>
+			<xsd:element name="matricule" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="nom" type="xsd:string"/>
+			<xsd:element name="prenom" type="xsd:string"/>
+			<xsd:element name="dateNaissance" type="xsd:date" minOccurs="0"/>
+			<xsd:element name="numeroParent" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="passwordParent" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="emailParent" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="sexe" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="classeId" type="xsd:long"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:complexType name="EleveDto">
-        <xsd:sequence>
-            <xsd:element name="id" type="xsd:long" minOccurs="0"/>
-            <xsd:element name="matricule" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="nom" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="prenom" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="dateNaissance" type="xsd:date" minOccurs="0"/>
-            <xsd:element name="classeId" type="xsd:long" minOccurs="0"/>
-            <xsd:element name="classeNom" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="niveauId" type="xsd:long" minOccurs="0"/>
-            <xsd:element name="niveauNom" type="xsd:string" minOccurs="0"/>
-        </xsd:sequence>
-    </xsd:complexType>
+	<xsd:complexType name="EleveDto">
+		<xsd:sequence>
+			<xsd:element name="id" type="xsd:long" minOccurs="0"/>
+			<xsd:element name="matricule" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="nom" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="prenom" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="dateNaissance" type="xsd:date" minOccurs="0"/>
+			<xsd:element name="classeId" type="xsd:long" minOccurs="0"/>
+			<xsd:element name="classeNom" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="niveauId" type="xsd:long" minOccurs="0"/>
+			<xsd:element name="niveauNom" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="numeroParent" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="emailParent" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="sexe" type="xsd:string" minOccurs="0"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:simpleType name="TypeMaladieEleve">
-        <xsd:restriction base="xsd:string">
-            <xsd:enumeration value="ALLERGIE"/>
-            <xsd:enumeration value="MALADIE_CHRONIQUE"/>
-        </xsd:restriction>
-    </xsd:simpleType>
+	<xsd:simpleType name="TypeMaladieEleve">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="ALLERGIE"/>
+			<xsd:enumeration value="MALADIE_CHRONIQUE"/>
+		</xsd:restriction>
+	</xsd:simpleType>
 
-    <xsd:complexType name="MaladieEleveDto">
-        <xsd:sequence>
-            <xsd:element name="id" type="xsd:long" minOccurs="0"/>
-            <xsd:element name="eleveId" type="xsd:long" minOccurs="0"/>
-            <xsd:element name="type" type="tns:TypeMaladieEleve" minOccurs="0"/>
-            <xsd:element name="libelle" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="details" type="xsd:string" minOccurs="0"/>
-        </xsd:sequence>
-    </xsd:complexType>
+	<xsd:complexType name="MaladieEleveDto">
+		<xsd:sequence>
+			<xsd:element name="id" type="xsd:long" minOccurs="0"/>
+			<xsd:element name="eleveId" type="xsd:long" minOccurs="0"/>
+			<xsd:element name="type" type="tns:TypeMaladieEleve" minOccurs="0"/>
+			<xsd:element name="libelle" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="details" type="xsd:string" minOccurs="0"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:complexType name="VaccinationDto">
-        <xsd:sequence>
-            <xsd:element name="id" type="xsd:long" minOccurs="0"/>
-            <xsd:element name="eleveId" type="xsd:long" minOccurs="0"/>
-            <xsd:element name="eleveNomComplet" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="classeNom" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="niveauNom" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="typeVaccinId" type="xsd:long" minOccurs="0"/>
-            <xsd:element name="typeVaccinNom" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="dose" type="xsd:int" minOccurs="0"/>
-            <xsd:element name="dateVaccination" type="xsd:date" minOccurs="0"/>
-            <xsd:element name="datePrevue" type="xsd:date" minOccurs="0"/>
-            <xsd:element name="numeroLot" type="xsd:string" minOccurs="0"/>
-        </xsd:sequence>
-    </xsd:complexType>
+	<xsd:complexType name="VaccinationDto">
+		<xsd:sequence>
+			<xsd:element name="id" type="xsd:long" minOccurs="0"/>
+			<xsd:element name="eleveId" type="xsd:long" minOccurs="0"/>
+			<xsd:element name="eleveNomComplet" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="classeNom" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="niveauNom" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="typeVaccinId" type="xsd:long" minOccurs="0"/>
+			<xsd:element name="typeVaccinNom" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="dose" type="xsd:int" minOccurs="0"/>
+			<xsd:element name="dateVaccination" type="xsd:date" minOccurs="0"/>
+			<xsd:element name="datePrevue" type="xsd:date" minOccurs="0"/>
+			<xsd:element name="numeroLot" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="status" type="xsd:string" minOccurs="0"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:complexType name="ConsultationDto">
-        <xsd:sequence>
-            <xsd:element name="id" type="xsd:long" minOccurs="0"/>
-            <xsd:element name="eleveId" type="xsd:long" minOccurs="0"/>
-            <xsd:element name="eleveNomComplet" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="classeNom" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="niveauNom" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="dateConsultation" type="xsd:date" minOccurs="0"/>
-            <xsd:element name="temperature" type="xsd:double" minOccurs="0"/>
-            <xsd:element name="vomissement" type="xsd:boolean" minOccurs="0"/>
-            <xsd:element name="diarrhee" type="xsd:boolean" minOccurs="0"/>
-            <xsd:element name="rapport" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="prochaineConsultation" type="xsd:date" minOccurs="0"/>
-            <xsd:element name="traitement" type="xsd:string" minOccurs="0"/>
-        </xsd:sequence>
-    </xsd:complexType>
+	<xsd:complexType name="ConsultationDto">
+		<xsd:sequence>
+			<xsd:element name="id" type="xsd:long" minOccurs="0"/>
+			<xsd:element name="eleveId" type="xsd:long" minOccurs="0"/>
+			<xsd:element name="eleveNomComplet" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="classeNom" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="niveauNom" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="dateConsultation" type="xsd:date" minOccurs="0"/>
+			<xsd:element name="temperature" type="xsd:double" minOccurs="0"/>
+			<xsd:element name="vomissement" type="xsd:boolean" minOccurs="0"/>
+			<xsd:element name="diarrhee" type="xsd:boolean" minOccurs="0"/>
+			<xsd:element name="rapport" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="prochaineConsultation" type="xsd:date" minOccurs="0"/>
+			<xsd:element name="traitement" type="xsd:string" minOccurs="0"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:complexType name="AccidentDto">
-        <xsd:sequence>
-            <xsd:element name="id" type="xsd:long" minOccurs="0"/>
-            <xsd:element name="eleveId" type="xsd:long" minOccurs="0"/>
-            <xsd:element name="eleveNomComplet" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="classeNom" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="niveauNom" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="dateAccident" type="xsd:date" minOccurs="0"/>
-            <xsd:element name="description" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="diagnostic" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="traitement" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="etat" type="xsd:string" minOccurs="0"/>
-        </xsd:sequence>
-    </xsd:complexType>
+	<xsd:complexType name="AccidentDto">
+		<xsd:sequence>
+			<xsd:element name="id" type="xsd:long" minOccurs="0"/>
+			<xsd:element name="eleveId" type="xsd:long" minOccurs="0"/>
+			<xsd:element name="eleveNomComplet" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="classeNom" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="niveauNom" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="dateAccident" type="xsd:date" minOccurs="0"/>
+			<xsd:element name="description" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="diagnostic" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="traitement" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="etat" type="xsd:string" minOccurs="0"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:complexType name="FicheMedicaleDto">
-        <xsd:sequence>
-            <xsd:element name="eleve" type="tns:EleveDto" minOccurs="0"/>
-            <xsd:element name="vaccinations" minOccurs="0">
-                <xsd:complexType>
-                    <xsd:sequence>
-                        <xsd:element name="item" type="tns:VaccinationDto" minOccurs="0" maxOccurs="unbounded"/>
-                    </xsd:sequence>
-                </xsd:complexType>
-            </xsd:element>
-            <xsd:element name="consultations" minOccurs="0">
-                <xsd:complexType>
-                    <xsd:sequence>
-                        <xsd:element name="item" type="tns:ConsultationDto" minOccurs="0" maxOccurs="unbounded"/>
-                    </xsd:sequence>
-                </xsd:complexType>
-            </xsd:element>
-            <xsd:element name="accidents" minOccurs="0">
-                <xsd:complexType>
-                    <xsd:sequence>
-                        <xsd:element name="item" type="tns:AccidentDto" minOccurs="0" maxOccurs="unbounded"/>
-                    </xsd:sequence>
-                </xsd:complexType>
-            </xsd:element>
-            <xsd:element name="maladies" minOccurs="0">
-                <xsd:complexType>
-                    <xsd:sequence>
-                        <xsd:element name="item" type="tns:MaladieEleveDto" minOccurs="0" maxOccurs="unbounded"/>
-                    </xsd:sequence>
-                </xsd:complexType>
-            </xsd:element>
-            <xsd:element name="carnetNumeriquePresent" type="xsd:boolean" minOccurs="0"/>
-            <xsd:element name="carnetNumeriqueVersion" type="xsd:long" minOccurs="0"/>
-        </xsd:sequence>
-    </xsd:complexType>
+	<xsd:complexType name="FicheMedicaleDto">
+		<xsd:sequence>
+			<xsd:element name="eleve" type="tns:EleveDto" minOccurs="0"/>
+			<xsd:element name="vaccinations" minOccurs="0">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="item" type="tns:VaccinationDto" minOccurs="0" maxOccurs="unbounded"/>
+						<xsd:any namespace="##other" processContents="lax"
+							minOccurs="0" maxOccurs="unbounded" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="consultations" minOccurs="0">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="item" type="tns:ConsultationDto" minOccurs="0" maxOccurs="unbounded"/>
+						<xsd:any namespace="##other" processContents="lax"
+							minOccurs="0" maxOccurs="unbounded" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="accidents" minOccurs="0">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="item" type="tns:AccidentDto" minOccurs="0" maxOccurs="unbounded"/>
+						<xsd:any namespace="##other" processContents="lax"
+							minOccurs="0" maxOccurs="unbounded" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="maladies" minOccurs="0">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="item" type="tns:MaladieEleveDto" minOccurs="0" maxOccurs="unbounded"/>
+						<xsd:any namespace="##other" processContents="lax"
+							minOccurs="0" maxOccurs="unbounded" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="carnetNumeriquePresent" type="xsd:boolean" minOccurs="0"/>
+			<xsd:element name="carnetNumeriqueVersion" type="xsd:long" minOccurs="0"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:complexType name="EleveDtoList">
-        <xsd:sequence>
-            <xsd:element name="item" type="tns:EleveDto" minOccurs="0" maxOccurs="unbounded"/>
-        </xsd:sequence>
-    </xsd:complexType>
+	<xsd:complexType name="EleveDtoList">
+		<xsd:sequence>
+			<xsd:element name="item" type="tns:EleveDto" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:element name="GetElevesListQuery" type="tns:GetElevesListQueryType"/>
-    <xsd:complexType name="GetElevesListQueryType">
-        <xsd:sequence>
-            <xsd:element name="niveauId" type="xsd:long" minOccurs="0"/>
-            <xsd:element name="classeId" type="xsd:long" minOccurs="0"/>
-            <xsd:element name="q" type="xsd:string" minOccurs="0"/>
-        </xsd:sequence>
-    </xsd:complexType>
+	<xsd:element name="GetElevesListQuery" type="tns:GetElevesListQueryType"/>
+	<xsd:complexType name="GetElevesListQueryType">
+		<xsd:sequence>
+			<xsd:element name="niveauId" type="xsd:long" minOccurs="0"/>
+			<xsd:element name="classeId" type="xsd:long" minOccurs="0"/>
+			<xsd:element name="q" type="xsd:string" minOccurs="0"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 
-    <xsd:element name="PostEleveBody" type="tns:EleveRequest"/>
-    <xsd:element name="PutEleveBody" type="tns:EleveRequest"/>
-    <xsd:element name="EleveResponse" type="tns:EleveDto"/>
-    <xsd:element name="EleveListResponse" type="tns:EleveDtoList"/>
-    <xsd:element name="FicheMedicaleResponse" type="tns:FicheMedicaleDto"/>
+	<xsd:element name="PostEleveBody" type="tns:EleveRequest"/>
+	<xsd:element name="PutEleveBody" type="tns:UpdateEleveRequestType"/>
+	<xsd:complexType name="UpdateEleveRequestType">
+		<xsd:sequence>
+			<xsd:element name="id" type="xsd:long"/>
+			<xsd:element name="body" type="tns:EleveRequest"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="EleveResponse" type="tns:EleveDto"/>
+	<xsd:element name="EleveListResponse" type="tns:EleveDtoList"/>
+	<xsd:element name="FicheMedicaleResponse" type="tns:FicheMedicaleDto"/>
+	<xsd:element name="DeleteEleveRequest" type="tns:DeleteEleveRequestType"/>
+	<xsd:complexType name="DeleteEleveRequestType">
+		<xsd:sequence>
+			<xsd:element name="id" type="xsd:long"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="DeleteEleveResponse" type="tns:DeleteEleveResponseType"/>
+	<xsd:complexType name="DeleteEleveResponseType">
+		<xsd:sequence>
+			<xsd:element name="success" type="xsd:boolean"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:element name="VerifierParentBody" type="tns:VerifierParentRequestType"/>
+	<xsd:complexType name="VerifierParentRequestType">
+		<xsd:sequence>
+			<xsd:element name="numeroTelephone" type="xsd:string"/>
+			<xsd:element name="motDePasse" type="xsd:string"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="VerifierParentResponse" type="tns:VerifierParentResponseType"/>
+	<xsd:complexType name="VerifierParentResponseType">
+		<xsd:sequence>
+			<xsd:element name="ok" type="xsd:boolean"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:element name="VerifierCompteBody" type="tns:VerifierCompteRequestType"/>
+	<xsd:complexType name="VerifierCompteRequestType">
+		<xsd:sequence>
+			<xsd:element name="login" type="xsd:string"/>
+			<xsd:element name="motDePasse" type="xsd:string"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="VerifierCompteResponse" type="tns:VerifierCompteResponseType"/>
+	<xsd:complexType name="VerifierCompteResponseType">
+		<xsd:sequence>
+			<xsd:element name="ok" type="xsd:boolean"/>
+			<xsd:element name="role" type="xsd:string" minOccurs="0"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:element name="ChangeParentPasswordBody" type="tns:ChangeParentPasswordRequestType"/>
+	<xsd:complexType name="ChangeParentPasswordRequestType">
+		<xsd:sequence>
+			<xsd:element name="numeroTelephone" type="xsd:string"/>
+			<xsd:element name="ancienMotDePasse" type="xsd:string"/>
+			<xsd:element name="nouveauMotDePasse" type="xsd:string"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="ChangeParentPasswordResponse" type="tns:ChangeParentPasswordResponseType"/>
+	<xsd:complexType name="ChangeParentPasswordResponseType">
+		<xsd:sequence>
+			<xsd:element name="ok" type="xsd:boolean"/>
+			<xsd:element name="message" type="xsd:string" minOccurs="0"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:element name="GenerateAiRecommendationsBody" type="tns:GenerateAiRecommendationsRequestType"/>
+	<xsd:complexType name="GenerateAiRecommendationsRequestType">
+		<xsd:sequence>
+			<xsd:element name="eleveId" type="xsd:long"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:element name="GenerateAiRecommendationsResponse" type="tns:GenerateAiRecommendationsResponseType"/>
+	<xsd:complexType name="GenerateAiRecommendationsResponseType">
+		<xsd:sequence>
+			<xsd:element name="ok" type="xsd:boolean"/>
+			<xsd:element name="message" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="patientSummary" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="statisticalSummary" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="businessRules" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="llmPrompt" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="recommendations" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="vaccinationPlan" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="preventionAdvice" type="xsd:string" minOccurs="0"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:element name="PublishParentRiskNotificationBody" type="tns:PublishParentRiskNotificationRequestType"/>
+	<xsd:complexType name="PublishParentRiskNotificationRequestType">
+		<xsd:sequence>
+			<xsd:element name="eleveId" type="xsd:long"/>
+			<xsd:element name="riskScore" type="xsd:int" minOccurs="0"/>
+			<xsd:element name="detail" type="xsd:string" minOccurs="0"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="PublishParentRiskNotificationResponse" type="tns:PublishParentRiskNotificationResponseType"/>
+	<xsd:complexType name="PublishParentRiskNotificationResponseType">
+		<xsd:sequence>
+			<xsd:element name="ok" type="xsd:boolean"/>
+			<xsd:element name="message" type="xsd:string" minOccurs="0"/>
+			<xsd:any namespace="##other" processContents="lax"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
 </xsd:schema>

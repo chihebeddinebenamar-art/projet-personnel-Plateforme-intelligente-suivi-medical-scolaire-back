@@ -2,11 +2,15 @@ package tn.educanet.pfe.serviceimpl;
 
 import java.util.List;
 
+import org.dozer.Mapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import tn.educanet.pfe.api.dto.TypeVaccinDto;
-import tn.educanet.pfe.api.dto.TypeVaccinRequest;
+import jakarta.annotation.Resource;
+
+import com.tn.educanet.pfe.api.vaccins.types.schema.TypeVaccinDto;
+import com.tn.educanet.pfe.api.vaccins.types.schema.TypeVaccinRequest;
+
 import tn.educanet.pfe.exception.BusinessException;
 import tn.educanet.pfe.persistence.TypeVaccin;
 import tn.educanet.pfe.repository.VaccinationRepository;
@@ -16,19 +20,18 @@ import tn.educanet.pfe.service.TypeVaccinService;
 @Service
 public class TypeVaccinServiceImpl implements TypeVaccinService {
 
-	private final TypeVaccinRepository typeVaccinRepository;
-	private final VaccinationRepository vaccinationRepository;
+	@Resource
+	private TypeVaccinRepository typeVaccinRepository;
 
-	public TypeVaccinServiceImpl(TypeVaccinRepository typeVaccinRepository,
-			VaccinationRepository vaccinationRepository) {
-		this.typeVaccinRepository = typeVaccinRepository;
-		this.vaccinationRepository = vaccinationRepository;
-	}
+	@Resource
+	private VaccinationRepository vaccinationRepository;
+	@Resource
+	private Mapper mapper;
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<TypeVaccinDto> lister() {
-		return typeVaccinRepository.findAll().stream().map(TypeVaccinDto::from).toList();
+		return typeVaccinRepository.findAll().stream().map(t -> mapper.map(t, TypeVaccinDto.class)).toList();
 	}
 
 	@Override
@@ -37,7 +40,7 @@ public class TypeVaccinServiceImpl implements TypeVaccinService {
 		TypeVaccin t = new TypeVaccin();
 		t.setNom(request.getNom());
 		t.setQuantiteTotale(request.getQuantiteInitiale());
-		return TypeVaccinDto.from(typeVaccinRepository.save(t));
+		return mapper.map(typeVaccinRepository.save(t), TypeVaccinDto.class);
 	}
 
 	@Override
@@ -47,7 +50,7 @@ public class TypeVaccinServiceImpl implements TypeVaccinService {
 				.orElseThrow(() -> new BusinessException("Type de vaccin introuvable"));
 		t.setNom(request.getNom());
 		t.setQuantiteTotale(request.getQuantiteInitiale());
-		return TypeVaccinDto.from(typeVaccinRepository.save(t));
+		return mapper.map(typeVaccinRepository.save(t), TypeVaccinDto.class);
 	}
 
 	@Override

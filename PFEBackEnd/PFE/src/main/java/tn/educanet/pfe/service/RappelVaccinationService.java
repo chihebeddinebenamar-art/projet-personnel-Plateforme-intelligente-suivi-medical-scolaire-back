@@ -2,8 +2,8 @@ package tn.educanet.pfe.service;
 
 import java.util.List;
 
-import tn.educanet.pfe.api.dto.RappelVaccinationDto;
-import tn.educanet.pfe.api.dto.RappelVaccinationRequest;
+import com.tn.educanet.pfe.api.rappels.vaccination.schema.RappelVaccinationDto;
+import com.tn.educanet.pfe.api.rappels.vaccination.schema.RappelVaccinationRequest;
 
 public interface RappelVaccinationService {
 

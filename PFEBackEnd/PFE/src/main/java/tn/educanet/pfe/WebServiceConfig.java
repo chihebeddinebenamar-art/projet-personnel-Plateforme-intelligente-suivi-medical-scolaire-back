@@ -71,8 +71,23 @@ public class WebServiceConfig extends WsConfigurerAdapter {
 	public XsdSchemaCollection schemaCollection() {
 		CommonsXsdSchemaCollection collection = new CommonsXsdSchemaCollection(
 				new ClassPathResource[] { 
-						
-				            new ClassPathResource("xsd/user.xsd")
+						new ClassPathResource("xsd/user.xsd"),
+						new ClassPathResource("xsd/accident-endpoint.xsd"),
+						new ClassPathResource("xsd/classe-endpoint.xsd"),
+						new ClassPathResource("xsd/consultation-endpoint.xsd"),
+						new ClassPathResource("xsd/eleve-carnet-numerique-endpoint.xsd"),
+						new ClassPathResource("xsd/eleve-photo-profil-endpoint.xsd"),
+						new ClassPathResource("xsd/eleve-endpoint.xsd"),
+						new ClassPathResource("xsd/eleve-maladie-endpoint.xsd"),
+						new ClassPathResource("xsd/maladies-endpoint.xsd"),
+						new ClassPathResource("xsd/niveau-endpoint.xsd"),
+						new ClassPathResource("xsd/rappel-vaccination-endpoint.xsd"),
+						new ClassPathResource("xsd/type-vaccin-endpoint.xsd"),
+						new ClassPathResource("xsd/vaccination-endpoint.xsd"),
+						new ClassPathResource("xsd/adress.xsd"),
+						new ClassPathResource("xsd/common.xsd"),
+						new ClassPathResource("xsd/phone.xsd"),
+						new ClassPathResource("xsd/role.xsd")
 
 				});
 		collection.setInline(true);

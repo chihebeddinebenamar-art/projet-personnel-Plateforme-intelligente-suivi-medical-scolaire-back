@@ -1,34 +1,45 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-    targetNamespace="http://www.educanet.tn.com/business/common/schema"
-    xmlns:tns="http://www.educanet.tn.com/business/common/schema"
-    elementFormDefault="qualified"
-    version="1.0">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xsd:schema elementFormDefault="qualified" version="1.0"
+	targetNamespace="http://www.educanet.tn.com/business/common/schema"
+	xmlns:tns="http://www.educanet.tn.com/business/common/schema"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="https://jakarta.ee/xml/ns/jaxb"
+	jaxb:version="3.0">
 
-    <xsd:simpleType name="ROLE">
-        <xsd:restriction base="xsd:string">
-            <xsd:enumeration value="ADMIN"/>
-            <xsd:enumeration value="TEACHER"/>
-            <xsd:enumeration value="PARENT"/>
-            <xsd:enumeration value="STUDENT"/>
-            <xsd:enumeration value="INFERMIER"/>
-            <xsd:enumeration value="USER"/>
-        </xsd:restriction>
-    </xsd:simpleType>
+	<xsd:annotation>
+		<xsd:documentation xml:lang="fr">
+			Types communs (énumérations partagées par les schémas métier).
+		</xsd:documentation>
+		<xsd:appinfo>
+			<jaxb:schemaBindings>
+				<jaxb:package name="com.tn.educanet.business.common.schema" />
+			</jaxb:schemaBindings>
+		</xsd:appinfo>
+	</xsd:annotation>
 
-    <xsd:simpleType name="SortDirection">
-        <xsd:restriction base="xsd:string">
-            <xsd:enumeration value="ASC"/>
-            <xsd:enumeration value="DESC"/>
-        </xsd:restriction>
-    </xsd:simpleType>
+	<xsd:simpleType name="ROLE">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="ADMIN"/>
+			<xsd:enumeration value="TEACHER"/>
+			<xsd:enumeration value="PARENT"/>
+			<xsd:enumeration value="STUDENT"/>
+			<xsd:enumeration value="INFERMIER"/>
+			<xsd:enumeration value="USER"/>
+		</xsd:restriction>
+	</xsd:simpleType>
 
-    <xsd:simpleType name="AUTHORITY">
-        <xsd:restriction base="xsd:string">
-            <xsd:enumeration value="LOCKED"/>
-            <xsd:enumeration value="UNLOCKED"/>
-            <xsd:enumeration value="ALL"/>
-        </xsd:restriction>
-    </xsd:simpleType>
+	<xsd:simpleType name="SortDirection">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="ASC"/>
+			<xsd:enumeration value="DESC"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="AUTHORITY">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="LOCKED"/>
+			<xsd:enumeration value="UNLOCKED"/>
+			<xsd:enumeration value="ALL"/>
+		</xsd:restriction>
+	</xsd:simpleType>
 
 </xsd:schema>

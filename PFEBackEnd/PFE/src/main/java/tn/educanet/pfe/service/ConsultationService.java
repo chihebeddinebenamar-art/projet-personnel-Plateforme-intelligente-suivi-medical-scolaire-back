@@ -2,8 +2,8 @@ package tn.educanet.pfe.service;
 
 import java.util.List;
 
-import tn.educanet.pfe.api.dto.ConsultationDto;
-import tn.educanet.pfe.api.dto.ConsultationRequest;
+import com.tn.educanet.pfe.api.consultations.schema.ConsultationDto;
+import com.tn.educanet.pfe.api.consultations.schema.ConsultationRequest;
 
 public interface ConsultationService {
 

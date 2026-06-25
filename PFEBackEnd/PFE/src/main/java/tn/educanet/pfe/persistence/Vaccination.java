@@ -34,8 +34,8 @@ public class Vaccination implements Serializable {
 	@Column(nullable = false)
 	private int dose;
 
-	/** Date à laquelle la vaccination a été réalisée. */
-	@Column(name = "date_vaccination", nullable = false)
+	/** Date à laquelle la vaccination a été réalisée (null si en attente). */
+	@Column(name = "date_vaccination")
 	private LocalDate dateVaccination;
 
 	/** Date prévue (calendrier vaccinal / rappel). */
@@ -45,6 +45,10 @@ public class Vaccination implements Serializable {
 	/** Numéro de lot du flacon utilisé pour cette administration. */
 	@Column(name = "numero_lot", length = 128)
 	private String numeroLot;
+
+	/** VACCINE, EN_ATTENTE ou MANQUANT (affichage / filtre métier). */
+	@Column(name = "status", length = 32)
+	private String status;
 
 	public Vaccination() {
 	}
@@ -114,5 +118,13 @@ public class Vaccination implements Serializable {
 
 	public void setNumeroLot(String numeroLot) {
 		this.numeroLot = numeroLot;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 }

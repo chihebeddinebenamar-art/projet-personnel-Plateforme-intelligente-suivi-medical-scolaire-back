@@ -2,8 +2,8 @@ package tn.educanet.pfe.service;
 
 import java.util.List;
 
-import tn.educanet.pfe.api.dto.AccidentDto;
-import tn.educanet.pfe.api.dto.AccidentRequest;
+import com.tn.educanet.pfe.api.accidents.schema.AccidentDto;
+import com.tn.educanet.pfe.api.accidents.schema.AccidentRequest;
 
 public interface AccidentService {
 

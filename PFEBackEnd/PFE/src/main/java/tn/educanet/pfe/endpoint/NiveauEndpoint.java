@@ -2,58 +2,82 @@ package tn.educanet.pfe.endpoint;
 
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.dozer.Mapper;
+import org.springframework.ws.server.endpoint.annotation.Endpoint;
+import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
+import org.springframework.ws.server.endpoint.annotation.RequestPayload;
+import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
-import jakarta.validation.Valid;
-import tn.educanet.pfe.api.dto.NiveauDto;
-import tn.educanet.pfe.api.dto.NiveauRequest;
+import com.tn.educanet.pfe.api.niveaux.schema.DeleteNiveauRequestType;
+import com.tn.educanet.pfe.api.niveaux.schema.DeleteNiveauResponseType;
+import com.tn.educanet.pfe.api.niveaux.schema.GetNiveauxListQueryType;
+import com.tn.educanet.pfe.api.niveaux.schema.NiveauDto;
+import com.tn.educanet.pfe.api.niveaux.schema.NiveauDtoList;
+import com.tn.educanet.pfe.api.niveaux.schema.NiveauRequest;
+import com.tn.educanet.pfe.api.niveaux.schema.ObjectFactory;
+import com.tn.educanet.pfe.api.niveaux.schema.UpdateNiveauRequestType;
+
+import jakarta.annotation.Resource;
+import jakarta.xml.bind.JAXBElement;
 import tn.educanet.pfe.service.NiveauService;
 
-@RestController
-@RequestMapping("/api/niveaux")
+@Endpoint
 public class NiveauEndpoint {
 
-	private final NiveauService niveauService;
+	public static final String NS = "http://www.educanet.tn.com/pfe/api/niveaux/schema";
 
-	public NiveauEndpoint(NiveauService niveauService) {
-		this.niveauService = niveauService;
+	@Resource
+	private Mapper mapper;
+
+	@Resource
+	private NiveauService service;
+	private final ObjectFactory factory = new ObjectFactory();
+
+	@PayloadRoot(namespace = NS, localPart = "GetNiveauxListQuery")
+	@ResponsePayload
+	public JAXBElement<NiveauDtoList> lister(@RequestPayload JAXBElement<GetNiveauxListQueryType> request) {
+		GetNiveauxListQueryType query = request != null ? request.getValue() : null;
+		List<NiveauDto> items = service.lister(query != null ? query.getAnnee() : null,
+				query != null ? query.getNom() : null);
+		NiveauDtoList response = factory.createNiveauDtoList();
+		for (NiveauDto dto : items) {
+			com.tn.educanet.pfe.api.niveaux.schema.NiveauDto ws = mapper.map(dto,
+					com.tn.educanet.pfe.api.niveaux.schema.NiveauDto.class);
+			response.getItem().add(ws);
+		}
+		return factory.createNiveauListResponse(response);
 	}
 
-	@GetMapping
-	public List<NiveauDto> lister(@RequestParam(required = false) String annee,
-			@RequestParam(required = false) String nom) {
-		return niveauService.lister(annee, nom);
+	@PayloadRoot(namespace = NS, localPart = "PostNiveauBody")
+	@ResponsePayload
+	public JAXBElement<com.tn.educanet.pfe.api.niveaux.schema.NiveauDto> creer(
+			@RequestPayload JAXBElement<NiveauRequest> request) {
+		NiveauRequest apiRequest = mapper.map(request.getValue(), NiveauRequest.class);
+		NiveauDto created = service.creer(apiRequest);
+		com.tn.educanet.pfe.api.niveaux.schema.NiveauDto response = mapper.map(created,
+				com.tn.educanet.pfe.api.niveaux.schema.NiveauDto.class);
+		return factory.createNiveauResponse(response);
 	}
 
-	@GetMapping("/{id}")
-	public NiveauDto get(@PathVariable Long id) {
-		return niveauService.get(id);
+	@PayloadRoot(namespace = NS, localPart = "PutNiveauBody")
+	@ResponsePayload
+	public JAXBElement<com.tn.educanet.pfe.api.niveaux.schema.NiveauDto> modifier(
+			@RequestPayload JAXBElement<UpdateNiveauRequestType> request) {
+		UpdateNiveauRequestType value = request.getValue();
+		NiveauRequest apiRequest = mapper.map(value.getBody(), NiveauRequest.class);
+		NiveauDto updated = service.modifier(value.getId(), apiRequest);
+		com.tn.educanet.pfe.api.niveaux.schema.NiveauDto response = mapper.map(updated,
+				com.tn.educanet.pfe.api.niveaux.schema.NiveauDto.class);
+		return factory.createNiveauResponse(response);
 	}
 
-	@PostMapping
-	@ResponseStatus(HttpStatus.CREATED)
-	public NiveauDto creer(@Valid @RequestBody NiveauRequest request) {
-		return niveauService.creer(request);
-	}
-
-	@PutMapping("/{id}")
-	public NiveauDto modifier(@PathVariable Long id, @Valid @RequestBody NiveauRequest request) {
-		return niveauService.modifier(id, request);
-	}
-
-	@DeleteMapping("/{id}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void supprimer(@PathVariable Long id) {
-		niveauService.supprimer(id);
+	@PayloadRoot(namespace = NS, localPart = "DeleteNiveauRequest")
+	@ResponsePayload
+	public JAXBElement<DeleteNiveauResponseType> supprimer(
+			@RequestPayload JAXBElement<DeleteNiveauRequestType> request) {
+		service.supprimer(request.getValue().getId());
+		DeleteNiveauResponseType response = factory.createDeleteNiveauResponseType();
+		response.setSuccess(true);
+		return factory.createDeleteNiveauResponse(response);
 	}
 }
